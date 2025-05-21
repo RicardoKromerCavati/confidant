@@ -1,4 +1,3 @@
-import { appendFileSync } from 'fs';
 import '../extensions/stringExtensions';
 
 export class Credential {
