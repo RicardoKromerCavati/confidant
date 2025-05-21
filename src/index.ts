@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import { loadCredentialCommands as loadCredentialCommands } from './presentation/commands/credentials';
+
+const commandName = 'confidant';
+const description = 'Your favorite password manager';
+const version = '1.0.0.1';
+
 const program = new Command();
 program
-    .name('my_cli_password_manager')
-    .description('A simple password manager')
-    .version('1.0.0');
+    .name(commandName)
+    .description(description)
+    .version(version);
 
 loadCredentialCommands(program);
 
