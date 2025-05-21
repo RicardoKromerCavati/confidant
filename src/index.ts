@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { loadCredentialCommands as loadCredentialCommands } from './presentation/commands/credentials';
+import { asignCredentialCommands as asignCredentialCommands } from './presentation/commands/credentials';
 
 const commandName = 'confidant';
 const description = 'Your favorite password manager';
@@ -12,6 +12,6 @@ program
     .description(description)
     .version(version);
 
-loadCredentialCommands(program);
+asignCredentialCommands(program);
 
 program.parse(process.argv);

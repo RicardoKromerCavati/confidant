@@ -1,9 +1,9 @@
 import { Command } from 'commander';
 import { CredentialService } from '../../domain/services/credentialService';
 
-export function loadCredentialCommands(program: Command) {
+export function asignCredentialCommands(program: Command) {
     program
-        .command('create-credential')
+        .command('create-credential|create|cc')
         .description('Create new credential')
         .argument('<credentialName>', 'Credential name (you should chose a name you can remember to find the credential easily)')
         .argument('<username>', 'Username')
