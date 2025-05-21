@@ -1,7 +1,7 @@
 {
-  "name": "my_cli_password_manager",
+  "name": "confidant",
   "bin": {
-    "my_cli_password_manager": "dist/index.js"
+    "confidant": "dist/index.js"
   },
   "version": "1.0.0",
   "main": "index.js",
