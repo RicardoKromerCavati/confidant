@@ -54,12 +54,22 @@ export class Credential {
     }
 
     private static validatePassword(password: string): [boolean, string] {
+        const errorMessage = 'You must create a stronger password';
+
         if (password.isNullOrWhiteSpace()) {
             return [false, 'Password must not be empty'];
         }
 
         if (password.length < 20) {
-            return [false, 'You must create a stronger password'];
+            return [false, errorMessage];
+        }
+
+        if (!password.hasSpecialChars()) {
+            return [false, errorMessage];
+        }
+
+        if (!password.hasNumbers()) {
+            return [false, errorMessage];
         }
 
         return [true, ''];
