@@ -13,4 +13,10 @@ export function asignCredentialCommands(program: Command) {
         .action((credentialName: string, username: string, password: string) => {
             CredentialService.createCredential(credentialName, username, password);
         });
+
+    program
+        .command('list')
+        .alias('l')
+        .description('Get credential list')
+        .action(async () => { await CredentialService.getCredentials() });
 }
