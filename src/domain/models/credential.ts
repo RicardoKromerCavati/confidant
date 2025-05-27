@@ -1,6 +1,7 @@
 import '../extensions/stringExtensions';
 
 export class Credential {
+    id: number = 0;
     credentialName: string = '';
     username: string = '';
     password: string = '';
@@ -60,7 +61,7 @@ export class Credential {
             return [false, 'Password must not be empty'];
         }
 
-        if (password.length < 20) {
+        if (password.length < 12) {
             return [false, errorMessage];
         }
 
