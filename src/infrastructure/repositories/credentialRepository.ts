@@ -5,17 +5,14 @@ import { Credential } from '../../domain/models/credential';
 const path = require('node:path')
 
 export class CredentialRepository {
+    private _databaseFilePath = path.join(os.homedir(), 'confidant', 'confidant.db');
+    private _db = Datastore.create({ filename: this._databaseFilePath, autoload: true });
+
     public async createCredential(credential: Credential) {
-        const databaseFilePath = path.join(os.homedir(), 'confidant', 'confidant.db');
-
-        const db = Datastore.create({ filename: databaseFilePath, autoload: true });
-
-        const newCredential = await db.insert<Credential>(credential);
+        await this._db.insert<Credential>(credential);
     }
 
     public async getCredentialNames(): Promise<Credential[]> {
-        const databaseFilePath = path.join(os.homedir(), 'confidant', 'confidant.db');
-        const db = Datastore.create({ filename: databaseFilePath, autoload: true });
-        return await db.find<Credential>({});
+        return await this._db.find<Credential>({});
     }
 }
