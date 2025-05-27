@@ -1,9 +1,17 @@
 import { Credential } from '../../domain/models/credential';
 import { CredentialRepository } from '../../infrastructure/repositories/credentialRepository';
+import '../extensions/stringExtensions';
+import '../services/passwordService';
+import { PasswordService } from '../services/passwordService';
 
 export class CredentialService {
     public static createCredential(credentialName: string, username: string, password: string): void {
         try {
+            if (password == undefined || password.isNullOrWhiteSpace()) {
+                const passwordLength : number = 40;
+                password = PasswordService.createPassword(passwordLength);
+            }
+
             const [result, credential] = Credential.Create(credentialName, username, password);
 
             if (result && credential != null) {
@@ -32,7 +40,10 @@ export class CredentialService {
 
             for (let index = 0; index < foundCredentials.length; index++) {
                 const element = foundCredentials[index];
-                console.log(element.credentialName);
+
+                let credential = { CredentialName: element.credentialName, Username: element.username };
+
+                console.log(credential);
             }
 
         } catch (error) {
