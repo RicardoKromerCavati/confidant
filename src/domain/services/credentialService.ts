@@ -8,7 +8,7 @@ export class CredentialService {
     public static createCredential(credentialName: string, username: string, password: string): void {
         try {
             if (password == undefined || password.isNullOrWhiteSpace()) {
-                const passwordLength : number = 40;
+                const passwordLength: number = 12;
                 password = PasswordService.createPassword(passwordLength);
             }
 
@@ -41,7 +41,7 @@ export class CredentialService {
             for (let index = 0; index < foundCredentials.length; index++) {
                 const element = foundCredentials[index];
 
-                let credential = { CredentialName: element.credentialName, Username: element.username };
+                let credential = { Id: element.id, CredentialName: element.credentialName, Username: element.username };
 
                 console.log(credential);
             }
