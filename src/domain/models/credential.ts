@@ -60,19 +60,17 @@ export class Credential {
             return [false, 'Password must not be empty'];
         }
 
-        //This code was commented to make tests easier.
+        if (password.length < 20) {
+            return [false, errorMessage];
+        }
 
-        // if (password.length < 20) {
-        //     return [false, errorMessage];
-        // }
+        if (!password.hasSpecialChars()) {
+            return [false, errorMessage];
+        }
 
-        // if (!password.hasSpecialChars()) {
-        //     return [false, errorMessage];
-        // }
-
-        // if (!password.hasNumbers()) {
-        //     return [false, errorMessage];
-        // }
+        if (!password.hasNumbers()) {
+            return [false, errorMessage];
+        }
 
         return [true, ''];
     }
