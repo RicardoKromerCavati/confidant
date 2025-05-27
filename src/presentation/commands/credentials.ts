@@ -9,7 +9,7 @@ export function asignCredentialCommands(program: Command) {
         .description('Create new credential')
         .argument('<credentialName>', 'Credential name (you should chose a name you can remember to find the credential easily)')
         .argument('<username>', 'Username')
-        .argument('<password>', 'Password')
+        .argument('[password]', 'Password')
         .action((credentialName: string, username: string, password: string) => {
             CredentialService.createCredential(credentialName, username, password);
         });
