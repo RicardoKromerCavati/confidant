@@ -19,4 +19,20 @@ export function asignCredentialCommands(program: Command) {
         .alias('l')
         .description('Get credential list')
         .action(async () => { await CredentialService.getCredentials() });
+
+    program
+        .command('get-password')
+        .alias('gp')
+        .description('Get credential password from its id')
+        .argument('<id>', 'Credential id')
+        .action((credentialId: string) => {
+
+            const convertedCredentialId = Number(credentialId);
+
+            if (isNaN(convertedCredentialId)) {
+                console.log('Please enter a numeric credential id');
+                return;
+            }
+            CredentialService.getCredentialPassword(convertedCredentialId);
+        });
 }
