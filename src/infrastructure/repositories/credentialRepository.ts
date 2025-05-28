@@ -1,8 +1,7 @@
 import Datastore from 'nedb-promises';
 import * as os from 'os';
 import { Credential } from '../../domain/models/credential';
-
-const path = require('node:path');
+import path from 'node:path';
 
 export class CredentialRepository {
     private _databaseFilePath = path.join(os.homedir(), 'confidant', 'confidant.db');
@@ -30,5 +29,9 @@ export class CredentialRepository {
 
     public async getCredentialNames(): Promise<Credential[]> {
         return (await this._db.find<Credential>({}).sort({ id: 1 }));
+    }
+
+    public async getCredentialById(credentialId: number): Promise<Credential | null> {
+        return await this._db.findOne<Credential>({ id: credentialId });
     }
 }
