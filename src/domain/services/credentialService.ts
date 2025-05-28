@@ -50,4 +50,23 @@ export class CredentialService {
             console.log(error);
         }
     }
+
+    public static async getCredentialPassword(id: number) {
+        try {
+            const foundCredential = await new CredentialRepository().getCredentialById(id);
+
+            if (foundCredential == null) {
+                console.log('Could not find credential');
+                return;
+            }
+
+            const clipboardy = (await import("clipboardy")).default
+            clipboardy.write(foundCredential.password);
+
+            console.log('Credential password copied to clipboard');
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }
