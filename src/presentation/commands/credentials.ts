@@ -7,9 +7,9 @@ export function asignCredentialCommands(program: Command) {
         .alias('cc')
         .alias('create-credential')
         .description('Create new credential')
-        .argument('<credentialName>', 'Credential name (you should chose a name you can remember to find the credential easily)')
-        .argument('<username>', 'Username')
-        .argument('[password]', 'Password')
+        .argument('<Item name>', 'Meaningful name for item (required)')
+        .argument('<Username>', 'Username or email used in credential (required)')
+        .argument('[Password]', 'Your item password (optional - send blank and confidant will create one for you)')
         .action((credentialName: string, username: string, password: string) => {
             CredentialService.createCredential(credentialName, username, password);
         });
@@ -17,13 +17,14 @@ export function asignCredentialCommands(program: Command) {
     program
         .command('list')
         .alias('l')
-        .description('Get credential list')
+        .description('Retrieve all items')
         .action(async () => { await CredentialService.getCredentials() });
 
     program
-        .command('get-password')
+        .command('get')
         .alias('gp')
-        .description('Get credential password from its id')
+        .alias('get-password')
+        .description('Get item password from id')
         .argument('<id>', 'Credential id')
         .action((credentialId: string) => {
 
