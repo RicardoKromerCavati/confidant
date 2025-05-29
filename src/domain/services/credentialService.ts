@@ -14,9 +14,7 @@ export class CredentialService {
 
             const [result, credential] = Credential.Create(credentialName, username, password);
 
-            if (result && credential != null) {
-                console.log(`[FROM SERVICE]\nCredential name: ${credential.credentialName}\nUsername: ${credential.username}\nPassword: ${credential.password}`);
-
+            if (result && credential != null) {    
                 new CredentialRepository().createCredential(credential);
 
                 return;
