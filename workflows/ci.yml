@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Build
+        uses: actions/checkout@v4
+        run: npm run build
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Tests        
+        run: npm test
