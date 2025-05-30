@@ -25,7 +25,9 @@
   "dependencies": {
     "clipboardy": "^4.0.0",
     "commander": "^14.0.0",
-    "nedb-promises": "^6.2.3"
+    "nedb-promises": "^6.2.3",
+    "typescript-logging": "^2.2.0",
+    "typescript-logging-category-style": "^2.2.0"
   },
   "jest": {
     "preset": "ts-jest",

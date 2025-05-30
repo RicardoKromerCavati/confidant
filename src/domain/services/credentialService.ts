@@ -4,9 +4,14 @@ import '../extensions/stringExtensions';
 import '../services/passwordService';
 import { PasswordService } from '../services/passwordService';
 import * as readline from 'readline/promises';
+import { getLogger } from "../models/logConfig";
+import { Category } from 'typescript-logging-category-style';
 
 export class CredentialService {
+    static logger: Category = getLogger("credentials");
+
     public static createCredential(credentialName: string, username: string, password: string): void {
+
         try {
             if (password == undefined || password.isNullOrWhiteSpace()) {
                 const passwordLength: number = 12;
@@ -21,10 +26,10 @@ export class CredentialService {
                 return;
             }
 
-            console.log('Credential not created');
+            CredentialService.logger.warn('Credential not created');
 
         } catch (error) {
-            console.log(error);
+            CredentialService.logger.error(JSON.stringify(error));
         }
     }
 
@@ -33,7 +38,7 @@ export class CredentialService {
             const foundCredentials = await new CredentialRepository().getCredentialNames();
 
             if (foundCredentials.length <= 0) {
-                console.log('no credentials found');
+                CredentialService.logger.warn('There are no credentials available');
                 return;
             }
 
@@ -42,11 +47,11 @@ export class CredentialService {
 
                 let credential = { Id: element.id, CredentialName: element.credentialName, Username: element.username };
 
-                console.log(credential);
+                CredentialService.logger.info(JSON.stringify(credential));
             }
 
         } catch (error) {
-            console.log(error);
+            CredentialService.logger.error(JSON.stringify(error));
         }
     }
 
@@ -55,17 +60,17 @@ export class CredentialService {
             const foundCredential = await new CredentialRepository().getCredentialById(id);
 
             if (foundCredential == null) {
-                console.log('Could not find credential');
+                CredentialService.logger.warn('Could not find credential');
                 return;
             }
 
             const clipboardy = (await import("clipboardy")).default
             clipboardy.write(foundCredential.password);
 
-            console.log('Credential password copied to clipboard');
+            CredentialService.logger.info('Credential password copied to clipboard');
 
         } catch (error) {
-            console.log(error);
+            CredentialService.logger.error(JSON.stringify(error));
         }
     }
 
@@ -74,7 +79,7 @@ export class CredentialService {
 
         var rl = readline.createInterface({ input, output });
 
-        console.log('Generate new passowrd!');
+        CredentialService.logger.info('Generate new passowrd!');
 
         var length = 0;
 
@@ -84,7 +89,7 @@ export class CredentialService {
             const convertedLenght = Number(answer);
 
             if (isNaN(convertedLenght)) {
-                console.log('Please write a numeric value!');
+                CredentialService.logger.warn('Please write a numeric value!');
                 continue;
             }
 
@@ -92,14 +97,12 @@ export class CredentialService {
 
             if (length < 8 || length > 128) {
                 length = 0;
-                console.log('Please write a numeric value from 8 to 128!');
+                CredentialService.logger.warn('Please write a numeric value from 8 to 128!');
                 continue;
             }
 
             break;
         }
-
-        console.log(`resposta: ${length}`);
 
         var useNumbers = await this.askYesOrNoQuestion(rl, 'Would you like to include numbers? [y/n]: ');
         var useSpecialChars = await this.askYesOrNoQuestion(rl, 'Would you like to include special characters? [y/n]: ');
@@ -107,7 +110,13 @@ export class CredentialService {
 
         rl.close();
 
-        console.log(PasswordService.createPassword(length, useNumbers, useSpecialChars, useUpperCaseChars));
+        const generatedPasword = PasswordService.createPassword(length, useNumbers, useSpecialChars, useUpperCaseChars);
+
+        const clipboardy = (await import("clipboardy")).default
+
+        clipboardy.write(generatedPasword);
+
+        CredentialService.logger.info('Password was copied to your clipboard');
     }
 
     private static async askYesOrNoQuestion(rl: readline.Interface, question: string): Promise<boolean> {
@@ -132,7 +141,7 @@ export class CredentialService {
                     break;
                 default:
                     tempAnswer = '';
-                    console.log('Invalid answer, please use \'y\' or \'n\'');
+                    CredentialService.logger.warn('Invalid answer, please use \'y\' or \'n\'');
                     break;
             }
         }
