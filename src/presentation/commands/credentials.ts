@@ -34,6 +34,13 @@ export function asignCredentialCommands(program: Command) {
                 console.log('Please enter a numeric credential id');
                 return;
             }
+            
             CredentialService.getCredentialPassword(convertedCredentialId);
         });
+
+        program
+        .command('genpass')
+        .alias('generate-password')
+        .description('Generate new password')
+        .action(() => CredentialService.generatePassword());
 }
