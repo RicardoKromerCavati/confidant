@@ -3,6 +3,7 @@ import { CredentialRepository } from '../../infrastructure/repositories/credenti
 import '../extensions/stringExtensions';
 import '../services/passwordService';
 import { PasswordService } from '../services/passwordService';
+import * as readline from 'readline/promises';
 
 export class CredentialService {
     public static createCredential(credentialName: string, username: string, password: string): void {
@@ -14,7 +15,7 @@ export class CredentialService {
 
             const [result, credential] = Credential.Create(credentialName, username, password);
 
-            if (result && credential != null) {    
+            if (result && credential != null) {
                 new CredentialRepository().createCredential(credential);
 
                 return;
@@ -66,5 +67,76 @@ export class CredentialService {
         } catch (error) {
             console.log(error);
         }
+    }
+
+    public static async generatePassword() {
+        const { stdin: input, stdout: output } = require('node:process');
+
+        var rl = readline.createInterface({ input, output });
+
+        console.log('Generate new passowrd!');
+
+        var length = 0;
+
+        while (length == 0) {
+            var answer = await rl.question('Please choose the length from 8 to 128: ');
+
+            const convertedLenght = Number(answer);
+
+            if (isNaN(convertedLenght)) {
+                console.log('Please write a numeric value!');
+                continue;
+            }
+
+            length = convertedLenght;
+
+            if (length < 8 || length > 128) {
+                length = 0;
+                console.log('Please write a numeric value from 8 to 128!');
+                continue;
+            }
+
+            break;
+        }
+
+        console.log(`resposta: ${length}`);
+
+        var useNumbers = await this.askYesOrNoQuestion(rl, 'Would you like to include numbers? [y/n]: ');
+        var useSpecialChars = await this.askYesOrNoQuestion(rl, 'Would you like to include special characters? [y/n]: ');
+        var useUpperCaseChars = await this.askYesOrNoQuestion(rl, 'Would you like to include upper case characters? [y/n]: ');
+
+        rl.close();
+
+        console.log(PasswordService.createPassword(length, useNumbers, useSpecialChars, useUpperCaseChars));
+    }
+
+    private static async askYesOrNoQuestion(rl: readline.Interface, question: string): Promise<boolean> {
+
+        var tempAnswer: string = '';
+
+        var result = false;
+
+        while (tempAnswer.isNullOrWhiteSpace()) {
+            var answer = await rl.question(question);
+
+            switch (answer) {
+                case 'y':
+                case 'Y':
+                    result = true;
+                    tempAnswer = answer;
+                    break;
+                case 'n':
+                case 'n':
+                    result = false;
+                    tempAnswer = answer;
+                    break;
+                default:
+                    tempAnswer = '';
+                    console.log('Invalid answer, please use \'y\' or \'n\'');
+                    break;
+            }
+        }
+
+        return result;
     }
 }
