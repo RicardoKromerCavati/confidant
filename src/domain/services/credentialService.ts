@@ -4,12 +4,9 @@ import '../extensions/stringExtensions';
 import '../services/passwordService';
 import { PasswordService } from '../services/passwordService';
 import * as readline from 'readline/promises';
-import { getLogger } from "../models/logConfig";
 import { Category } from 'typescript-logging-category-style';
 
 export class CredentialService {
-    static logger: Category = getLogger("credentials");
-
     public static createCredential(credentialName: string, username: string, password: string): void {
 
         try {
@@ -26,10 +23,10 @@ export class CredentialService {
                 return;
             }
 
-            CredentialService.logger.warn('Credential not created');
+            console.log('Credential not created');
 
         } catch (error) {
-            CredentialService.logger.error(JSON.stringify(error));
+            console.log(JSON.stringify(error));
         }
     }
 
@@ -38,7 +35,7 @@ export class CredentialService {
             const foundCredentials = await new CredentialRepository().getCredentialNames();
 
             if (foundCredentials.length <= 0) {
-                CredentialService.logger.warn('There are no credentials available');
+                console.log('There are no credentials available');
                 return;
             }
 
@@ -47,11 +44,11 @@ export class CredentialService {
 
                 let credential = { Id: element.id, CredentialName: element.credentialName, Username: element.username };
 
-                CredentialService.logger.info(JSON.stringify(credential));
+                console.log(JSON.stringify(credential));
             }
 
         } catch (error) {
-            CredentialService.logger.error(JSON.stringify(error));
+            console.log(JSON.stringify(error));
         }
     }
 
@@ -60,17 +57,17 @@ export class CredentialService {
             const foundCredential = await new CredentialRepository().getCredentialById(id);
 
             if (foundCredential == null) {
-                CredentialService.logger.warn('Could not find credential');
+                console.log('Could not find credential');
                 return;
             }
 
             const clipboardy = (await import("clipboardy")).default
             clipboardy.write(foundCredential.password);
 
-            CredentialService.logger.info('Credential password copied to clipboard');
+            console.log('Credential password copied to clipboard');
 
         } catch (error) {
-            CredentialService.logger.error(JSON.stringify(error));
+            console.log(JSON.stringify(error));
         }
     }
 
@@ -79,7 +76,7 @@ export class CredentialService {
 
         var rl = readline.createInterface({ input, output });
 
-        CredentialService.logger.info('Generate new passowrd!');
+        console.log('Generate new passowrd!');
 
         var length = 0;
 
@@ -89,7 +86,7 @@ export class CredentialService {
             const convertedLenght = Number(answer);
 
             if (isNaN(convertedLenght)) {
-                CredentialService.logger.warn('Please write a numeric value!');
+                console.log('Please write a numeric value!');
                 continue;
             }
 
@@ -97,7 +94,7 @@ export class CredentialService {
 
             if (length < 8 || length > 128) {
                 length = 0;
-                CredentialService.logger.warn('Please write a numeric value from 8 to 128!');
+                console.log('Please write a numeric value from 8 to 128!');
                 continue;
             }
 
@@ -116,7 +113,7 @@ export class CredentialService {
 
         clipboardy.write(generatedPasword);
 
-        CredentialService.logger.info('Password was copied to your clipboard');
+        console.log('Password was copied to your clipboard');
     }
 
     private static async askYesOrNoQuestion(rl: readline.Interface, question: string): Promise<boolean> {
@@ -141,7 +138,7 @@ export class CredentialService {
                     break;
                 default:
                     tempAnswer = '';
-                    CredentialService.logger.warn('Invalid answer, please use \'y\' or \'n\'');
+                    console.log('Invalid answer, please use \'y\' or \'n\'');
                     break;
             }
         }
