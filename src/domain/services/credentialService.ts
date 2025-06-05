@@ -4,15 +4,16 @@ import '../extensions/stringExtensions';
 import '../services/passwordService';
 import { PasswordService } from '../services/passwordService';
 import * as readline from 'readline/promises';
-import { Category } from 'typescript-logging-category-style';
+import { OperationResult } from '../models/operationResult';
+import * as operationResultHandler from '../models/operationResult';
 
 export class CredentialService {
-    public static createCredential(credentialName: string, username: string, password: string): void {
+    public static createCredential(credentialName: string, username: string, password: string): OperationResult<boolean> {
 
         try {
             if (password == undefined || password.isNullOrWhiteSpace()) {
-                const passwordLength: number = 12;
-                password = PasswordService.createPassword(passwordLength);
+                const defaultPasswordLength: number = 12;
+                password = PasswordService.createPassword(defaultPasswordLength);
             }
 
             const [result, credential] = Credential.Create(credentialName, username, password);
@@ -20,39 +21,32 @@ export class CredentialService {
             if (result && credential != null) {
                 new CredentialRepository().createCredential(credential);
 
-                return;
+                return operationResultHandler.createSuccessResult<boolean>(true);
             }
 
-            console.log('Credential not created');
+            return operationResultHandler.createErrorResult<boolean>('Credential not created');
 
         } catch (error) {
-            console.log(JSON.stringify(error));
+            return operationResultHandler.createErrorResult<boolean>(JSON.stringify(error));
         }
     }
 
-    public static async getCredentials() {
+    public static async getCredentials(): Promise<OperationResult<Credential[]>> {
         try {
             const foundCredentials = await new CredentialRepository().getCredentialNames();
 
             if (foundCredentials.length <= 0) {
-                console.log('There are no credentials available');
-                return;
+                return operationResultHandler.createErrorResult<Credential[]>('There are no credentials available');
             }
 
-            for (let index = 0; index < foundCredentials.length; index++) {
-                const element = foundCredentials[index];
-
-                let credential = { Id: element.id, CredentialName: element.credentialName, Username: element.username };
-
-                console.log(JSON.stringify(credential));
-            }
-
+            return operationResultHandler.createSuccessResult<Credential[]>(foundCredentials);
         } catch (error) {
-            console.log(JSON.stringify(error));
+            return operationResultHandler.createErrorResult<Credential[]>(JSON.stringify(error));
         }
     }
 
     public static async getCredentialPassword(id: number) {
+        //TODO Convert this method to use operationResult.
         try {
             const foundCredential = await new CredentialRepository().getCredentialById(id);
 
