@@ -11,6 +11,7 @@ on:
 
 jobs:
   build:
+    name: Build the application
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +30,9 @@ jobs:
       - name: Build
         run: npm run build
   tests:
+    name: Unit tests
+    needs: build
+    if: needs.test.result == 'success'
     runs-on: ubuntu-latest
 
     steps:
