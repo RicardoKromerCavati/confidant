@@ -11,10 +11,10 @@ const originalAction = Command.prototype.action;
 
 Command.prototype.action = function (
     this: Command,
-    fn: (...args: any[]) => any
+    fn: (...args: any[]) => any | Promise<any>
 ): Command {
-    return originalAction.call(this, (...args: any[]) => {
-        logUserIn();
+    return originalAction.call(this, async (...args: any[]) => {
+        await logUserIn();
         return fn(...args);
     });
 };
@@ -29,8 +29,8 @@ asignCredentialCommands(program);
 
 program.parse(process.argv);
 
-function logUserIn() {
-    const sessionResult = authenticationService.validateSession();
+async function logUserIn(): Promise<void> {
+    const sessionResult = await authenticationService.validateSession();
 
     if (sessionResult) {
         console.log('logged in');
