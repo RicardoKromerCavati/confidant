@@ -1,12 +1,14 @@
 import '../extensions/stringExtensions';
+import '../models/password';
+import { Password } from '../models/password';
 
 export class Credential {
     id: number = 0;
     credentialName: string = '';
     username: string = '';
-    password: string = '';
+    password: Password;
 
-    private constructor(credentialName: string, username: string, password: string) {
+    private constructor(credentialName: string, username: string, password: Password) {
         this.credentialName = credentialName;
         this.username = username;
         this.password = password;
@@ -28,14 +30,14 @@ export class Credential {
             return [false, null];
         }
 
-        [result, message] = Credential.validatePassword(password);
+        const passwordResult = Password.CreatePassword(password);
 
-        if (result == false) {
-            console.log(message);
+        if (!passwordResult.isSuccessful) {
+            console.log(passwordResult.message);
             return [false, null];
         }
 
-        return [true, new Credential(credentialName, username, password)];
+        return [true, new Credential(credentialName, username, passwordResult.value)];
     }
 
     private static validateCredentialName(credentialName: string): [boolean, string] {
@@ -49,28 +51,6 @@ export class Credential {
     private static validateUsername(username: string): [boolean, string] {
         if (username.isNullOrWhiteSpace()) {
             return [false, 'Username must not be empty'];
-        }
-
-        return [true, ''];
-    }
-
-    private static validatePassword(password: string): [boolean, string] {
-        const errorMessage = 'You must create a stronger password';
-
-        if (password.isNullOrWhiteSpace()) {
-            return [false, 'Password must not be empty'];
-        }
-
-        if (password.length < 12) {
-            return [false, errorMessage];
-        }
-
-        if (!password.hasSpecialChars()) {
-            return [false, errorMessage];
-        }
-
-        if (!password.hasNumbers()) {
-            return [false, errorMessage];
         }
 
         return [true, ''];

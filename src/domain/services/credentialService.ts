@@ -52,7 +52,7 @@ export class CredentialService {
                 return operationResultHandler.createErrorResult('Could not find credential');
             }
 
-            return operationResultHandler.createSuccessResult(foundCredential.password)
+            return operationResultHandler.createSuccessResult(foundCredential.password.value)
 
         } catch (error) {
             return operationResultHandler.createErrorResult(JSON.stringify(error));
