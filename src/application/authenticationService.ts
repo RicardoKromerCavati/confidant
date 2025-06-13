@@ -48,5 +48,6 @@ export namespace authenticationService {
         }
 
         //TODO: Continue here, if passwords are the same and match the rules, save it and continue.
+        //TODO: Create new unit tests.
     }
 }
