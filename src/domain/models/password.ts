@@ -22,7 +22,7 @@ export class Password {
     }
 
     private static validatePassword(password: string): [boolean, string] {
-        const errorMessage = 'You must create a stronger password';
+        const errorMessage = 'You must create a stronger password, it must have at least 12 characters, one special character and one number!';
 
         if (password.isNullOrWhiteSpace()) {
             return [false, 'Password must not be empty'];
