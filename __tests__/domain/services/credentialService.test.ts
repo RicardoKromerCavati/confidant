@@ -3,6 +3,7 @@
 //const CredentialClass = require('../../../src/domain/models/credential');
 import { log } from 'console';
 import { Credential } from '../../../src/domain/models/credential';
+import { Password } from '../../../src/domain/models/password';
 
 
 test('OnCreate_WhenNoValuesAreProvided_ShouldReturnFalseAndNull', () => {
@@ -30,12 +31,16 @@ test('OnCreate_WhenCredentialNameAndUsernameAreProvidedAndInvalidPasswordIsUsed_
 test('OnCreate_WhenValidInformationIsProvided_ShouldReturnTrueAndCorrectResult', () => {
     const credentialName = 'credentialName';
     const username = 'username';
-    const password = 'superPowerfullAndStrongP@ssw0rd';
+    const passwordText = 'superPowerfullAndStrongP@ssw0rd';
+    
+    const passwordResult = Password.CreatePassword("superPowerfullAndStrongP@ssw0rd");
+    const password = passwordResult.value;
 
-    const [success, credential] = Credential.Create(credentialName, username, password);
+    const [success, credential] = Credential.Create(credentialName, username, passwordText);
 
     expect(success).toBe(true);
+    expect(credential).not.toBeNull();
     expect(credential?.credentialName).toBe(credentialName);
     expect(credential?.username).toBe(username);
-    expect(credential?.password).toBe(password);
+    expect(credential?.password).toStrictEqual(password);
 });
