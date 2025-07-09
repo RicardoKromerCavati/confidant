@@ -81,8 +81,6 @@ export namespace authenticationService {
 
             const passwordResult = Password.CreatePassword(masterPasswordFirstAttempt);
 
-            passwordResult.isSuccessful = true;
-
             if (!passwordResult.isSuccessful) {
                 console.log(passwordResult.message);
                 masterPasswordFirstAttempt = 'firstAttempt';
