@@ -1,36 +1,48 @@
 #!/usr/bin/env node
+import "reflect-metadata";
 import { Command } from 'commander';
 import { asignCredentialCommands as asignCredentialCommands } from './presentation/commands/credentials';
-import { authenticationService } from './application/master-password/authenticationService';
+import { AuthenticationService } from './application/sessions/authenticationService';
+import { DatabaseContext } from './infrastructure/databaseContext';
+import { container } from 'tsyringe';
 
 const commandName = 'confidant';
 const description = 'Your favorite password manager';
 const version = '1.0.0.1';
 
-const originalAction = Command.prototype.action;
+async function startProgram() {
+    await new DatabaseContext().initializeDatabase();
 
-Command.prototype.action = function (
-    this: Command,
-    fn: (...args: any[]) => any | Promise<any>
-): Command {
-    return originalAction.call(this, async (...args: any[]) => {
-        if (await logUserIn()) {
-            return fn(...args);
-        }
-    });
-};
+    const originalAction = Command.prototype.action;
 
-const program = new Command();
-program
-    .name(commandName)
-    .description(description)
-    .version(version);
+    Command.prototype.action = function (
+        this: Command,
+        fn: (...args: any[]) => any | Promise<any>
+    ): Command {
+        return originalAction.call(this, async (...args: any[]) => {
 
-asignCredentialCommands(program);
+            if (await logUserIn()) {
+                await fn(...args);
+                process.exit(0);
+            }
+        });
+    };
 
-program.parse(process.argv);
+    const program = new Command();
+    program
+        .name(commandName)
+        .description(description)
+        .version(version);
+
+    asignCredentialCommands(program);
+
+    program.parse(process.argv);
+}
 
 async function logUserIn(): Promise<boolean> {
+
+    const authenticationService : AuthenticationService = container.resolve(AuthenticationService);
+
     const sessionResult = await authenticationService.validateSession();
 
     if (sessionResult) {
@@ -39,3 +51,8 @@ async function logUserIn(): Promise<boolean> {
 
     return false;
 }
+
+startProgram().catch(err => {
+    console.error(err);
+    process.exit(1);
+});

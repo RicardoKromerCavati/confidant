@@ -5,26 +5,39 @@ import bcrypt from 'bcrypt';
 import moment from 'moment';
 import { Password } from '../../domain/models/password';
 import { Session } from './session';
+import { SessionRepository } from '../../infrastructure/repositories/sessionRepository';
+import { injectable, inject } from "tsyringe";
 
-export namespace authenticationService {
-    export async function validateSession(): Promise<boolean> {
+@injectable()
+export class AuthenticationService {
+
+    private _sessionRepository: SessionRepository;
+
+    constructor(@inject(SessionRepository) sessionRepository: SessionRepository) {
+        this._sessionRepository = sessionRepository;
+    }
+
+    public async validateSession(): Promise<boolean> {
         const secretFilePath = path.join(require('os').homedir(), 'confidant', 'dcc8d9ed-5ba1-4797-91b4-0fba25427356');
 
         if (!fs.existsSync(secretFilePath)) {
-            const masterPassword = await createMasterPassword();
+            const masterPassword = await this.createMasterPassword();
 
             //TODO: Session information will be stored on database in the future
+            //TODO: Continue here, avoid using the file to store session information!
             var session = new Session(masterPassword, moment().add(10, 'minutes').toISOString(true));
+
+            await this._sessionRepository.CreateSession(session);
 
             fs.writeFileSync(secretFilePath, JSON.stringify(session));
 
             return true;
         }
 
-        return await validateSessionInformation(secretFilePath);
+        return await this.validateSessionInformation(secretFilePath);
     }
 
-    async function validateSessionInformation(secretFilePath: string): Promise<boolean> {
+    private async validateSessionInformation(secretFilePath: string): Promise<boolean> {
 
         const currentSessionJson: string = fs.readFileSync(secretFilePath, { encoding: 'utf-8' });
 
@@ -58,7 +71,7 @@ export namespace authenticationService {
         return false;
     }
 
-    async function createMasterPassword(): Promise<string> {
+    private async createMasterPassword(): Promise<string> {
         console.log('I see you haven\'t logged in yet!');
 
         var masterPasswordFirstAttempt = 'firstAttempt';
