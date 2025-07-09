@@ -1,4 +1,4 @@
-# Confidant
+# confidant
 
 This is my clean and simple password manager!
 
