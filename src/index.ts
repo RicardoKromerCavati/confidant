@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import { asignCredentialCommands as asignCredentialCommands } from './presentation/commands/credentials';
-import { authenticationService } from './application/authenticationService';
+import { authenticationService } from './application/master-password/authenticationService';
 
 const commandName = 'confidant';
 const description = 'Your favorite password manager';
@@ -14,8 +14,9 @@ Command.prototype.action = function (
     fn: (...args: any[]) => any | Promise<any>
 ): Command {
     return originalAction.call(this, async (...args: any[]) => {
-        await logUserIn();
-        return fn(...args);
+        if (await logUserIn()) {
+            return fn(...args);
+        }
     });
 };
 
@@ -29,13 +30,12 @@ asignCredentialCommands(program);
 
 program.parse(process.argv);
 
-async function logUserIn(): Promise<void> {
+async function logUserIn(): Promise<boolean> {
     const sessionResult = await authenticationService.validateSession();
 
     if (sessionResult) {
-        console.log('logged in');
-        return;
+        return true;
     }
 
-    console.log('please log in');
+    return false;
 }
