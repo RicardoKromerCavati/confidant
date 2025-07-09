@@ -1,5 +1,4 @@
 import { Entity, PrimaryKey, Property } from "@mikro-orm/libsql";
-import { Session } from '../../application/sessions/session';
 
 @Entity()
 export class DbSession {

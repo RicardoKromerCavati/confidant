@@ -1,4 +1,3 @@
-import path from 'node:path';
 import promptSync from 'prompt-sync';
 import bcrypt from 'bcrypt';
 import moment from 'moment';
