@@ -1,24 +1,24 @@
-import path from 'node:path';
-import * as os from 'os';
 import { MikroORM } from '@mikro-orm/libsql';
-import { injectable } from "tsyringe";
+import { injectable, singleton } from "tsyringe";
 
 @injectable()
+@singleton()
 export class DatabaseContext {
-    private _databaseFilePath = path.join(os.homedir(), 'confidant', 'confidant2.db');
+    
+    private _orm!: MikroORM;
 
     public async initializeDatabase(): Promise<void> {
-        const orm = await this.create();
-        await orm.schema.ensureDatabase();
-        await orm.schema.updateSchema();
+        await this.create();
+        await this._orm.schema.ensureDatabase();
+        await this._orm.schema.updateSchema();
     }
 
     public async getContext() {
-        return (await this.create()).em.fork();
+        return this._orm.em.fork();
     }
 
     private async create() {
-        return await MikroORM.init({
+        this._orm = await MikroORM.init({
             entities: ['./src/infrastructure/models/*.ts'],
             dbName: 'confidant.db',
             password: 'samplePassword'

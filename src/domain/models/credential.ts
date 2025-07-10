@@ -1,5 +1,6 @@
 import '../extensions/stringExtensions';
 import '../models/password';
+import { DbCredential } from '../../infrastructure/models/dbCredential';
 import { Password } from '../models/password';
 
 export class Credential {
@@ -12,6 +13,10 @@ export class Credential {
         this.credentialName = credentialName;
         this.username = username;
         this.password = password;
+    }
+
+    public toDbCredential() : DbCredential{
+        return new DbCredential(this.credentialName, this.username, this.password);
     }
 
     public static Create(credentialName: string, username: string, password: string): [boolean, Credential | null] {

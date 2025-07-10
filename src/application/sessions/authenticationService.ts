@@ -44,7 +44,7 @@ export class AuthenticationService {
         const masterPassword = prompt('Please re enter your password: ', { echo: '*' });
 
         if (await bcrypt.compare(masterPassword, dbSession.passwordHash)) {
-
+            
             dbSession.expiration = moment().add(10, 'minutes').toISOString(true);
 
             await this._sessionRepository.UpdateSession(dbSession);

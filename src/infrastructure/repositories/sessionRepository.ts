@@ -27,7 +27,11 @@ export class SessionRepository {
     }
 
     public async UpdateSession(dbSession: DbSession): Promise<void> {
-        wrap(dbSession).assign(dbSession);
+        const context = await this._databaseContext.getContext();
+        context.nativeUpdate(DbSession, { id: 1 }, { expiration: dbSession.expiration });
+        context.flush();
+
+        const user = await context.findOne(DbSession, { id: 1 });
     }
 
     public async GetSession(): Promise<DbSession | null> {
