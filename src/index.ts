@@ -11,7 +11,7 @@ const description = 'Your favorite password manager';
 const version = '1.0.0.1';
 
 async function startProgram() {
-    await new DatabaseContext().initializeDatabase();
+    await container.resolve(DatabaseContext).initializeDatabase();
 
     const originalAction = Command.prototype.action;
 
@@ -23,8 +23,8 @@ async function startProgram() {
 
             if (await logUserIn()) {
                 await fn(...args);
-                process.exit(0);
             }
+            process.exit(0);
         });
     };
 
