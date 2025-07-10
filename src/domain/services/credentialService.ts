@@ -7,6 +7,9 @@ import { OperationResult } from '../models/operationResult';
 import * as operationResultHandler from '../models/operationResult';
 
 export class CredentialService {
+
+    //TODO: Inject repo.
+
     public static createCredential(credentialName: string, username: string, password: string): OperationResult<boolean> {
 
         try {
