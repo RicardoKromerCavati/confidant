@@ -1,10 +1,14 @@
-//import { Credential } from '../../../src/domain/models/credential';
-
-//const CredentialClass = require('../../../src/domain/models/credential');
-import { log } from 'console';
 import { Credential } from '../../../src/domain/models/credential';
 import { Password } from '../../../src/domain/models/password';
+import { CredentialRepository } from '../../../src/infrastructure/repositories/credentialRepository';
+import { CredentialService } from '../../../src/domain/services/credentialService';
 
+const credentialRepositoryMock = <jest.Mock<CredentialRepository>>CredentialRepository;
+
+//TODO: Continue here, find out how to create mocks.
+const mockRepo: jest.Mocked<CredentialRepository> = {};
+
+const credentialService = new CredentialService(mockRepo);
 
 test('OnCreate_WhenNoValuesAreProvided_ShouldReturnFalseAndNull', () => {
     expect(Credential.Create('', '', '')).toStrictEqual([false, null]);
