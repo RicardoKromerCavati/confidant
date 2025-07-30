@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { CredentialService } from '../../domain/services/credentialService';
 import * as readline from 'readline/promises';
+import { container } from 'tsyringe';
 
 export function asignCredentialCommands(program: Command) {
     program
@@ -35,8 +36,9 @@ export function asignCredentialCommands(program: Command) {
 
 }
 
-function createCredential(credentialName: string, username: string, password: string): void {
-    const result = CredentialService.createCredential(credentialName, username, password);
+async function createCredential(credentialName: string, username: string, password: string): Promise<void> {
+    var credentialService = container.resolve(CredentialService);
+    const result = await credentialService.createCredential(credentialName, username, password);
 
     if (result.isSuccessful == false) {
         console.log(result.message);
@@ -47,7 +49,8 @@ function createCredential(credentialName: string, username: string, password: st
 }
 
 async function getCredentials(): Promise<void> {
-    const result = await CredentialService.getCredentials();
+    var credentialService = container.resolve(CredentialService);
+    const result = await credentialService.getCredentials();
 
     if (result.isSuccessful == false) {
         console.log(result.message);
@@ -66,6 +69,7 @@ async function getCredentials(): Promise<void> {
 }
 
 async function getCredentialPasswordById(idStr: string): Promise<void> {
+    var credentialService = container.resolve(CredentialService);
     const id = Number(idStr);
 
     if (isNaN(id)) {
@@ -73,17 +77,17 @@ async function getCredentialPasswordById(idStr: string): Promise<void> {
         return;
     }
 
-    const result = await CredentialService.getCredentialPassword(id);
+    const result = await credentialService.getCredentialPassword(id);
 
     if (!result.isSuccessful) {
         console.log(result.message);
         return;
     }
-
+    
     const password = result.value;
 
     const clipboardy = (await import("clipboardy")).default
-    clipboardy.write(password);
+    await clipboardy.write(password);
 
     console.log('Password copied to clipboard!');
 }
@@ -124,6 +128,7 @@ async function createPassword() {
 
     rl.close();
 
+    //TODO: make this use the instance
     const passwordResult = CredentialService.generatePassword(length, useNumbers, useSpecialChars, useUpperCaseChars);
 
     if (!passwordResult.isSuccessful) {
@@ -135,7 +140,7 @@ async function createPassword() {
 
     const clipboardy = (await import("clipboardy")).default
 
-    clipboardy.write(generatedPassword);
+    await clipboardy.write(generatedPassword);
 
     console.log('Password was copied to your clipboard');
 

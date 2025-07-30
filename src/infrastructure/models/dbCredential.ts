@@ -1,11 +1,11 @@
-import { Entity, PrimaryKey, Property } from "@mikro-orm/libsql";
-import { Password } from "../../domain/models/password";
+import { Embedded, Entity, PrimaryKey, Property } from "@mikro-orm/libsql";
+import { DbPassword } from "./dbPassword";
 
 @Entity()
 export class DbCredential {
 
     @PrimaryKey({ primary: true, autoincrement: true, default: 1 })
-    id: number = 1;
+    id!: number;
 
     @Property()
     credentialName: string;
@@ -13,10 +13,10 @@ export class DbCredential {
     @Property()
     username: string;
 
-    @Property()
-    password: Password;
+    @Embedded()
+    password: DbPassword;
 
-    constructor(credentialName: string, username: string, password: Password) {
+    constructor(credentialName: string, username: string, password: DbPassword) {
         this.credentialName = credentialName;
         this.username = username;
         this.password = password;

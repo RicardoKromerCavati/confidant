@@ -5,6 +5,7 @@ import { DbCredential } from '../models/dbCredential';
 import path from 'node:path';
 import { injectable, inject } from "tsyringe";
 import { DatabaseContext } from '../databaseContext';
+import { DbPassword } from '../models/dbPassword';
 
 @injectable()
 export class CredentialRepository {
@@ -18,32 +19,37 @@ export class CredentialRepository {
     private _databaseFilePath = path.join(os.homedir(), 'confidant', 'confidant.db');
     private _db = Datastore.create({ filename: this._databaseFilePath, autoload: true });
 
-    public async createCredential(credential: Credential) {
-        const c = await this._db
-            .find<Credential>({})
-            .sort({ id: -1 })
-            .limit(1)
-            .exec();
+    public async createCredential(credential: Credential): Promise<void> {
+        // const c = await this._db
+        //     .find<Credential>({})
+        //     .sort({ id: -1 })
+        //     .limit(1)
+        //     .exec();
 
-        let id: number = 0;
-        if (c.length == 0) {
-            id = 1;
-        }
-        else {
-            id = c[0].id + 1;
-        }
+        // let id: number = 0;
+        // if (c.length == 0) {
+        //     id = 1;
+        // }
+        // else {
+        //     id = c[0].id + 1;
+        // }
 
-        credential.id = id;
+        // credential.id = id;
 
         const context = await this._databaseContext.getContext();
 
-        await context.persistAndFlush(credential.toDbCredential());
+        const dbPassword = new DbPassword(credential.password.value);
+        const dbCredential = new DbCredential(credential.credentialName, credential.username, dbPassword);
+
+        await context.persist(dbCredential).flush();
     }
 
     public async getCredentialNames(): Promise<Credential[]> {
         const context = await this._databaseContext.getContext();
 
-        const dbCredentials = await context.findAll(DbCredential);
+        const dbCredentials = (await context.findAll(DbCredential, {
+            populate: ['password.value']
+        }));
 
         const credentials: Array<Credential> = new Array<Credential>(dbCredentials.length);
 
@@ -51,8 +57,9 @@ export class CredentialRepository {
             const username = dbCredentials[index].username;
             const password = dbCredentials[index].password;
             const credentialName = dbCredentials[index].credentialName;
+            const id = dbCredentials[index].id;
 
-            const [_, credential] = Credential.Create(credentialName, username, password.value);
+            const [_, credential] = Credential.Create(id, credentialName, username, password.value);
 
             credentials[index] = credential!;
         }
@@ -71,7 +78,7 @@ export class CredentialRepository {
         }
 
         //TODO: Create a better way to convert credential objects.
-        const [_, credential] = Credential.Create(dbCredential.credentialName, dbCredential.username, dbCredential.password.value);
+        const [_, credential] = Credential.Create(dbCredential.id, dbCredential.credentialName, dbCredential.username, dbCredential.password.value);
 
         return credential;
     }
