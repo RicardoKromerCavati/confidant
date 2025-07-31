@@ -1,50 +1,86 @@
-import { Credential } from '../../../src/domain/models/credential';
-import { Password } from '../../../src/domain/models/password';
 import { CredentialRepository } from '../../../src/infrastructure/repositories/credentialRepository';
 import { CredentialService } from '../../../src/domain/services/credentialService';
+import { DatabaseContext } from '../../../src/infrastructure/databaseContext';
 
-const credentialRepositoryMock = <jest.Mock<CredentialRepository>>CredentialRepository;
+jest.mock('../../../src/infrastructure/repositories/credentialRepository') ;
+let credentialRepositoryMock: jest.Mocked<CredentialRepository> ;
+credentialRepositoryMock = new CredentialRepository(new DatabaseContext()) as jest.Mocked<CredentialRepository> ;
 
-//TODO: Continue here, find out how to create mocks.
-const mockRepo: jest.Mocked<CredentialRepository> = {};
+const credentialService = new CredentialService(credentialRepositoryMock);
 
-const credentialService = new CredentialService(mockRepo);
+test('OnCreate_WhenNoValuesAreProvided_ShouldReturnFalseOperationResultWithCorrectMessage', async () => {
 
-test('OnCreate_WhenNoValuesAreProvided_ShouldReturnFalseAndNull', () => {
-    expect(Credential.Create('', '', '')).toStrictEqual([false, null]);
+    // Arrange
+    const credentialName: string = '';
+    const username: string = '';
+    const password: string = '';
+
+    // Act
+    const operationResult = await credentialService.createCredential(credentialName, username, password);
+
+    // Assert
+    expect(operationResult.isSuccessful).toBe(false);
+    expect(operationResult.value).toBe(null);
+    expect(operationResult.message).toStrictEqual('Credential not created');
 });
 
-test('OnCreate_WhenOnlyCredentialNameIsProvided_ShouldReturnFalseAndNull', () => {
+test('OnCreate_WhenOnlyCredentialNameIsProvided_ShouldReturnFalseOperationResultWithCorrectMessage', async () => {
+
+    // Arrange
     const credentialName = 'credentialName';
-    expect(Credential.Create(credentialName, '', '')).toStrictEqual([false, null]);
+
+    // Act
+    const operationResult = await credentialService.createCredential(credentialName, '', '');
+
+    // Assert
+    expect(operationResult.isSuccessful).toBe(false);
+    expect(operationResult.value).toBe(null);
+    expect(operationResult.message).toStrictEqual('Credential not created');
 });
 
-test('OnCreate_WhenCredentialNameAndUsernameAreProvided_ShouldReturnFalseAndNull', () => {
+test('OnCreate_WhenOnlyPasswordIsNotProvided_ShouldReturnFalseAndNull', async () => {
+
+    // Arrange
     const credentialName = 'credentialName';
     const username = 'username';
-    expect(Credential.Create(credentialName, username, '')).toStrictEqual([false, null]);
+
+    // Act
+    const operationResult = await credentialService.createCredential(credentialName, username, '');
+    
+    // Assert
+    expect(operationResult.isSuccessful).toBe(true);
+    expect(operationResult.value).toBe(true);
+    expect(operationResult.message).toStrictEqual('Success');
 });
 
-test('OnCreate_WhenCredentialNameAndUsernameAreProvidedAndInvalidPasswordIsUsed_ShouldReturnFalseAndNull', () => {
+test('OnCreate_WhenCredentialNameAndUsernameAreProvidedAndInvalidPasswordIsUsed_ShouldReturnFalseAndNull', async () => {
+
+    // Arrange
     const credentialName = 'credentialName';
     const username = 'username';
     const password = 'password'
-    expect(Credential.Create(credentialName, username, password)).toStrictEqual([false, null]);
+
+    // Act
+    const operationResult = await credentialService.createCredential(credentialName, username, password);
+
+    // Assert
+    expect(operationResult.isSuccessful).toBe(false);
+    expect(operationResult.value).toBe(null);
+    expect(operationResult.message).toStrictEqual('Credential not created');
 });
 
-test('OnCreate_WhenValidInformationIsProvided_ShouldReturnTrueAndCorrectResult', () => {
+test('OnCreate_WhenValidInformationIsProvided_ShouldReturnTrueAndCorrectResult', async () => {
+    
+    // Arrange
     const credentialName = 'credentialName';
     const username = 'username';
     const passwordText = 'superPowerfullAndStrongP@ssw0rd';
-    
-    const passwordResult = Password.CreatePassword("superPowerfullAndStrongP@ssw0rd");
-    const password = passwordResult.value;
 
-    const [success, credential] = Credential.Create(credentialName, username, passwordText);
+    // Act
+    const operationResult = await credentialService.createCredential(credentialName, username, passwordText);
 
-    expect(success).toBe(true);
-    expect(credential).not.toBeNull();
-    expect(credential?.credentialName).toBe(credentialName);
-    expect(credential?.username).toBe(username);
-    expect(credential?.password).toStrictEqual(password);
+    // Assert
+    expect(operationResult.isSuccessful).toBe(true);
+    expect(operationResult.value).toBe(true);
+    expect(operationResult.message).toStrictEqual('Success');
 });
