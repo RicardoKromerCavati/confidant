@@ -1,37 +1,85 @@
 import Datastore from 'nedb-promises';
 import * as os from 'os';
 import { Credential } from '../../domain/models/credential';
+import { DbCredential } from '../models/dbCredential';
 import path from 'node:path';
+import { injectable, inject } from "tsyringe";
+import { DatabaseContext } from '../databaseContext';
+import { DbPassword } from '../models/dbPassword';
 
+@injectable()
 export class CredentialRepository {
+
+    private _databaseContext: DatabaseContext;
+
+    constructor(@inject(DatabaseContext) databaseContext: DatabaseContext) {
+        this._databaseContext = databaseContext;
+    }
+
     private _databaseFilePath = path.join(os.homedir(), 'confidant', 'confidant.db');
     private _db = Datastore.create({ filename: this._databaseFilePath, autoload: true });
 
-    public async createCredential(credential: Credential) {
-        const c = await this._db
-            .find<Credential>({})
-            .sort({ id: -1 })
-            .limit(1)
-            .exec();
+    public async createCredential(credential: Credential): Promise<void> {
+        // const c = await this._db
+        //     .find<Credential>({})
+        //     .sort({ id: -1 })
+        //     .limit(1)
+        //     .exec();
 
-        let id: number = 0;
-        if (c.length == 0) {
-            id = 1;
-        }
-        else {
-            id = c[0].id + 1;
-        }
+        // let id: number = 0;
+        // if (c.length == 0) {
+        //     id = 1;
+        // }
+        // else {
+        //     id = c[0].id + 1;
+        // }
 
-        credential.id = id;
+        // credential.id = id;
 
-        await this._db.insert<Credential>(credential);
+        const context = await this._databaseContext.getContext();
+
+        const dbPassword = new DbPassword(credential.password.value);
+        const dbCredential = new DbCredential(credential.credentialName, credential.username, dbPassword);
+
+        await context.persist(dbCredential).flush();
     }
 
     public async getCredentialNames(): Promise<Credential[]> {
-        return (await this._db.find<Credential>({}).sort({ id: 1 }));
+        const context = await this._databaseContext.getContext();
+
+        const dbCredentials = (await context.findAll(DbCredential, {
+            populate: ['password.value']
+        }));
+
+        const credentials: Array<Credential> = new Array<Credential>(dbCredentials.length);
+
+        for (let index = 0; index < dbCredentials.length; index++) {
+            const username = dbCredentials[index].username;
+            const password = dbCredentials[index].password;
+            const credentialName = dbCredentials[index].credentialName;
+            const id = dbCredentials[index].id;
+
+            const [_, credential] = Credential.Create(id, credentialName, username, password.value);
+
+            credentials[index] = credential!;
+        }
+
+        return credentials;
     }
 
     public async getCredentialById(credentialId: number): Promise<Credential | null> {
-        return await this._db.findOne<Credential>({ id: credentialId });
+        const context = await this._databaseContext.getContext();
+
+        const dbCredential = await context.findOne(DbCredential, credentialId);
+
+        if (dbCredential === null ||
+            dbCredential === undefined) {
+            return null;
+        }
+
+        //TODO: Create a better way to convert credential objects.
+        const [_, credential] = Credential.Create(dbCredential.id, dbCredential.credentialName, dbCredential.username, dbCredential.password.value);
+
+        return credential;
     }
 }

@@ -8,14 +8,14 @@ export class Credential {
     username: string = '';
     password: Password;
 
-    private constructor(credentialName: string, username: string, password: Password) {
+    private constructor(id: number, credentialName: string, username: string, password: Password) {
         this.credentialName = credentialName;
         this.username = username;
         this.password = password;
+        this.id = id;
     }
 
-    public static Create(credentialName: string, username: string, password: string): [boolean, Credential | null] {
-
+    public static Create(id: number, credentialName: string, username: string, password: string): [boolean, Credential | null] {
         var [result, message] = Credential.validateCredentialName(credentialName);
 
         if (result == false) {
@@ -37,7 +37,7 @@ export class Credential {
             return [false, null];
         }
 
-        return [true, new Credential(credentialName, username, passwordResult.value)];
+        return [true, new Credential(id, credentialName, username, passwordResult.value)];
     }
 
     private static validateCredentialName(credentialName: string): [boolean, string] {

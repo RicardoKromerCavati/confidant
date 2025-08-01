@@ -4,12 +4,17 @@
         "module": "Node16",
         "outDir": "dist",
         "strict": true,
-        "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "noEmit": false,
         "removeComments": true,
-        "allowJs": true
+        "allowJs": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "esModuleInterop": true
     },
-    "include": ["src/**/*", "./typings"]
+    "include": [
+        "src/**/*",
+        "./typings"
+    ]
 }

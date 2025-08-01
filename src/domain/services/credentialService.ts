@@ -5,20 +5,29 @@ import '../services/passwordService';
 import { PasswordService } from '../services/passwordService';
 import { OperationResult } from '../models/operationResult';
 import * as operationResultHandler from '../models/operationResult';
+import { inject, injectable } from "tsyringe";
 
+@injectable()
 export class CredentialService {
-    public static createCredential(credentialName: string, username: string, password: string): OperationResult<boolean> {
+
+    private _credentialRepository: CredentialRepository;
+
+    constructor(@inject(CredentialRepository) credentialRepository: CredentialRepository) {
+        this._credentialRepository = credentialRepository;
+    }
+
+    public async createCredential(credentialName: string, username: string, password: string): Promise<OperationResult<boolean>> {
 
         try {
-            if (password == undefined || password.isNullOrWhiteSpace()) {
+            if (password === undefined || password.isNullOrWhiteSpace()) {
                 const defaultPasswordLength: number = 12;
                 password = PasswordService.createPassword(defaultPasswordLength);
             }
 
-            const [result, credential] = Credential.Create(credentialName, username, password);
+            const [result, credential] = Credential.Create(0, credentialName, username, password);
 
             if (result && credential != null) {
-                new CredentialRepository().createCredential(credential);
+                await this._credentialRepository.createCredential(credential);
 
                 return operationResultHandler.createSuccessResult<boolean>(true);
             }
@@ -30,9 +39,9 @@ export class CredentialService {
         }
     }
 
-    public static async getCredentials(): Promise<OperationResult<Credential[]>> {
+    public async getCredentials(): Promise<OperationResult<Credential[]>> {
         try {
-            const foundCredentials = await new CredentialRepository().getCredentialNames();
+            const foundCredentials = await this._credentialRepository.getCredentialNames();
 
             if (foundCredentials.length <= 0) {
                 return operationResultHandler.createErrorResult<Credential[]>('There are no credentials available');
@@ -40,18 +49,20 @@ export class CredentialService {
 
             return operationResultHandler.createSuccessResult<Credential[]>(foundCredentials);
         } catch (error) {
+            console.log(error);
             return operationResultHandler.createErrorResult<Credential[]>(JSON.stringify(error));
         }
     }
 
-    public static async getCredentialPassword(id: number): Promise<OperationResult<string>> {
+    public async getCredentialPassword(id: number): Promise<OperationResult<string>> {
         try {
-            const foundCredential = await new CredentialRepository().getCredentialById(id);
+            const foundCredential = await this._credentialRepository.getCredentialById(id);
 
             if (foundCredential == null) {
+                
                 return operationResultHandler.createErrorResult('Could not find credential');
             }
-
+            
             return operationResultHandler.createSuccessResult(foundCredential.password.value)
 
         } catch (error) {

@@ -7,12 +7,15 @@ on:
   pull_request:
     branches: ['**']
 
-  workflow_dispatch:
+permissions:
+  checks: write
+  contents: read
+  #workflow_dispatch:
 
 jobs:
   build:
     name: Build the application
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -33,7 +36,7 @@ jobs:
     name: Unit tests
     needs: build
     if: needs.build.result == 'success'
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code 
@@ -50,3 +53,11 @@ jobs:
 
       - name: Tests
         run: npm run test
+
+      - name: Upload test report
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: test-reports/*.xml
+          include_passed: true
+          detailed_summary: true
+

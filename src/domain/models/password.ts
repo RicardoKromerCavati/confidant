@@ -1,8 +1,11 @@
+import { Embeddable, Property } from '@mikro-orm/core';
 import { OperationResult } from '../models/operationResult';
 import * as operationResultHandler from '../models/operationResult';
 
+@Embeddable()
 export class Password {
 
+    @Property()
     value: string = '';
 
     private constructor(password: string) {
