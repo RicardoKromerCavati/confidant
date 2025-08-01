@@ -1,11 +1,12 @@
 import { CredentialRepository } from '../../../src/infrastructure/repositories/credentialRepository';
 import { CredentialService } from '../../../src/domain/services/credentialService';
 import { DatabaseContext } from '../../../src/infrastructure/databaseContext';
-import { Credential } from '../../../src/domain/models/credential'
+import { Credential } from '../../../src/domain/models/credential';
 
 jest.mock('../../../src/infrastructure/repositories/credentialRepository');
 
 describe('CredentialServiceTests', () => {
+    
     let credentialRepositoryMock: jest.Mocked<CredentialRepository>;
     let credentialService: CredentialService;
 
@@ -171,7 +172,7 @@ describe('CredentialServiceTests', () => {
         expect(operationResult.value).not.toBeNull();
         expect(operationResult.message).toStrictEqual(expectedMessage);
         expect(operationResult.value?.length).toBeGreaterThan(0);
-        
+
         const password = operationResult.value;
         expect(password).toStrictEqual(samplePassword);
     });
