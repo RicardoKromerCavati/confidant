@@ -6,7 +6,6 @@ import { PasswordService } from '../services/passwordService';
 import { OperationResult } from '../models/operationResult';
 import * as operationResultHandler from '../models/operationResult';
 import { inject, injectable } from "tsyringe";
-import { DbCredential } from '../../infrastructure/models/dbCredential';
 
 @injectable()
 export class CredentialService {
@@ -60,9 +59,10 @@ export class CredentialService {
             const foundCredential = await this._credentialRepository.getCredentialById(id);
 
             if (foundCredential == null) {
+                
                 return operationResultHandler.createErrorResult('Could not find credential');
             }
-
+            
             return operationResultHandler.createSuccessResult(foundCredential.password.value)
 
         } catch (error) {

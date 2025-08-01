@@ -1,6 +1,5 @@
 import '../extensions/stringExtensions';
 import '../models/password';
-import { DbCredential } from '../../infrastructure/models/dbCredential';
 import { Password } from '../models/password';
 
 export class Credential {
