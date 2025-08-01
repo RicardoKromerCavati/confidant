@@ -51,9 +51,8 @@ jobs:
       - name: Tests
         run: npm run coverage
 
-      - name: Publish Test Report
-        uses: ctrf-io/github-test-reporter@v1
+      - name: Upload test report
+        uses: mikepenz/action-junit-report@v4
         with:
-          report-path: './coverage/*.json'
-          github-report: true
-        if: always()
+          name: jest-test-results
+          path: test-reports/junit.xml
