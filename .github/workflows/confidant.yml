@@ -52,7 +52,6 @@ jobs:
         run: npm run coverage
 
       - name: Upload test report
-        uses: mikepenz/action-junit-report@v4
+        uses: mikepenz/action-junit-report@v5
         with:
-          name: jest-test-results
-          path: test-reports/junit.xml
+          report_paths: test-reports/*.xml
