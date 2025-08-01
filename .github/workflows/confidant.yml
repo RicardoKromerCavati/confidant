@@ -13,6 +13,9 @@ jobs:
   build:
     name: Build the application
     runs-on: self-hosted
+    defaults:
+      run:
+        shell: pwsh
 
     steps:
       - name: Checkout code
@@ -49,11 +52,11 @@ jobs:
         run: npm ci
 
       - name: Tests
-        run: npm run test
+        run: npm run coverage
 
       - name: Publish Test Report
         uses: ctrf-io/github-test-reporter@v1
         with:
-          report-path: './ctrf/*.json'
+          report-path: './coverage/*.json'
           github-report: true
         if: always()
