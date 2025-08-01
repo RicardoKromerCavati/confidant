@@ -50,3 +50,10 @@ jobs:
 
       - name: Tests
         run: npm run test
+
+      - name: Publish Test Report
+        uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: './ctrf/*.json'
+          github-report: true
+        if: always()
