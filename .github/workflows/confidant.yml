@@ -59,3 +59,5 @@ jobs:
         with:
           report_paths: test-reports/*.xml
           include_passed: true
+          detailed_summary: true
+
