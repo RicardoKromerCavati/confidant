@@ -12,10 +12,7 @@ on:
 jobs:
   build:
     name: Build the application
-    runs-on: self-hosted
-    defaults:
-      run:
-        shell: pwsh
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -36,7 +33,7 @@ jobs:
     name: Unit tests
     needs: build
     if: needs.build.result == 'success'
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code 
