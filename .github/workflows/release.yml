@@ -2,8 +2,7 @@ name: Release
 
 on:
   push:
-    branches: ["distribution"]
-
+    branches: ["main"]
 
 jobs:
   release:

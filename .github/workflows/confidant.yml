@@ -1,11 +1,10 @@
-name: CI
+name: Build and Tests
 
 on:
   push:
     branches: ['**']
-    tags: ['v*']
   pull_request:
-    branches: ['**']
+    branches: ['main']
 
 permissions:
   checks: write
