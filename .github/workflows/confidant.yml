@@ -1,12 +1,11 @@
 name: CI
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches: ['**']
-  #   tags: ['v*']
-  # pull_request:
-  #   branches: ['**']
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+    branches: ['**']
 
 permissions:
   checks: write
@@ -60,33 +59,3 @@ jobs:
           report_paths: test-reports/*.xml
           include_passed: true
           detailed_summary: true
-
-  relase:
-    name: Release
-    needs: [build,tests]
-    if: needs.build.result == 'success' && needs.tests.result == 'success'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-    steps:
-      - name: Checkout code 
-        uses: actions/checkout@v4
-
-      - name: Set Up Node Js
-        uses: actions/setup-node@v4
-        with: 
-          node-version: 18
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Build
-        run: npm run build
-
-      - name: Execute semantic-release
-        run: npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
