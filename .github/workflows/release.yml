@@ -27,6 +27,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Install semantic-release plugins
+        run: npm -g install @semantic-release/git @semantic-release/github @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+
       - name: Execute semantic-release
         run: npx semantic-release
         env:
