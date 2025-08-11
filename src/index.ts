@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import "reflect-metadata";
 import { Command } from 'commander';
 import { asignCredentialCommands as asignCredentialCommands } from './presentation/commands/credentials';
 import { AuthenticationService } from './application/sessions/authenticationService';
