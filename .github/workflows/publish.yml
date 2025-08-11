@@ -1,0 +1,17 @@
+name: Publish package on NPM
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code 
+        uses: actions/checkout@v4
+
+      - name: Print tag name
+        run: echo "Triggered by tag ${{ github.ref_name }}"
