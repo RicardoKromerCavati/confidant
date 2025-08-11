@@ -1,7 +1,8 @@
 name: Release
 
 on:
-  workflow_dispatch:
+  push:
+    branches: ["main"]
 
 jobs:
   release:
@@ -18,7 +19,7 @@ jobs:
       - name: Set Up Node Js
         uses: actions/setup-node@v4
         with: 
-            node-version: 18
+            node-version: 20
             cache: npm
 
       - name: Install dependencies
@@ -27,11 +28,11 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Install semantic-release plugins
-        run: npm -g install @semantic-release/git semantic-release && semantic-release
+      - name: Compact dist folder
+        run: zip -r dist.zip dist
 
       - name: Execute semantic-release
-        run: npx semantic-release
         env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+        run: npx semantic-release
         
