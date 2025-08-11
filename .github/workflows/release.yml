@@ -1,7 +1,9 @@
 name: Release
 
 on:
-  workflow_dispatch:
+  push:
+    branches: ["distribution"]
+
 
 jobs:
   release:
@@ -26,9 +28,6 @@ jobs:
         
       - name: Build
         run: npm run build
-
-      - name: Install semantic-release plugins
-        run: npm install @semantic-release/git
 
       - name: Execute semantic-release
         env:
