@@ -1,10 +1,7 @@
-import path from 'node:path';
-import * as os from 'os';
 import { Session } from '../../application/sessions/session';
 import { DbSession as DbSession } from '../models/dbSession';
 import { DatabaseContext } from '../databaseContext';
 import { injectable, inject } from "tsyringe";
-import { wrap } from '@mikro-orm/core';
 
 @injectable()
 export class SessionRepository {
@@ -14,8 +11,6 @@ export class SessionRepository {
     constructor(@inject(DatabaseContext) databaseContext: DatabaseContext) {
         this._databaseContext = databaseContext;
     }
-
-    private _databaseFilePath = path.join(os.homedir(), 'confidant', 'confidant2.db');
 
     public async InsertSession(session: Session): Promise<void> {
 

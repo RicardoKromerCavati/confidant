@@ -1,8 +1,5 @@
-import Datastore from 'nedb-promises';
-import * as os from 'os';
 import { Credential } from '../../domain/models/credential';
 import { DbCredential } from '../models/dbCredential';
-import path from 'node:path';
 import { injectable, inject } from "tsyringe";
 import { DatabaseContext } from '../databaseContext';
 import { DbPassword } from '../models/dbPassword';
@@ -16,26 +13,7 @@ export class CredentialRepository {
         this._databaseContext = databaseContext;
     }
 
-    private _databaseFilePath = path.join(os.homedir(), 'confidant', 'confidant.db');
-    private _db = Datastore.create({ filename: this._databaseFilePath, autoload: true });
-
     public async createCredential(credential: Credential): Promise<void> {
-        // const c = await this._db
-        //     .find<Credential>({})
-        //     .sort({ id: -1 })
-        //     .limit(1)
-        //     .exec();
-
-        // let id: number = 0;
-        // if (c.length == 0) {
-        //     id = 1;
-        // }
-        // else {
-        //     id = c[0].id + 1;
-        // }
-
-        // credential.id = id;
-
         const context = await this._databaseContext.getContext();
 
         const dbPassword = new DbPassword(credential.password.value);
