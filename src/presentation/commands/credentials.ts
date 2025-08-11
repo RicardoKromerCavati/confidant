@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import { CredentialService } from '../../domain/services/credentialService';
 import * as readline from 'readline/promises';
 import { container } from 'tsyringe';
+import { stdin as input, stdout as output } from "node:process";
 
 export function asignCredentialCommands(program: Command) {
     program
@@ -83,7 +84,7 @@ async function getCredentialPasswordById(idStr: string): Promise<void> {
         console.log(result.message);
         return;
     }
-    
+
     const password = result.value;
 
     const clipboardy = (await import("clipboardy")).default
@@ -93,8 +94,6 @@ async function getCredentialPasswordById(idStr: string): Promise<void> {
 }
 
 async function createPassword() {
-    const { stdin: input, stdout: output } = require('node:process');
-
     var rl = readline.createInterface({ input, output });
 
     console.log('Generate new passowrd!');

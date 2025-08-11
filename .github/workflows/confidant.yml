@@ -10,7 +10,6 @@ on:
 permissions:
   checks: write
   contents: read
-  #workflow_dispatch:
 
 jobs:
   build:
@@ -60,4 +59,3 @@ jobs:
           report_paths: test-reports/*.xml
           include_passed: true
           detailed_summary: true
-

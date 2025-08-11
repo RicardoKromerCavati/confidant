@@ -1,10 +1,12 @@
 import { MikroORM } from '@mikro-orm/libsql';
 import { injectable, singleton } from "tsyringe";
+import path from 'path';
+import * as os from 'os';
 
 @injectable()
 @singleton()
 export class DatabaseContext {
-    
+
     private _orm!: MikroORM;
 
     public async initializeDatabase(): Promise<void> {
@@ -18,9 +20,13 @@ export class DatabaseContext {
     }
 
     private async create() {
+        const rootDir = __dirname.includes('dist') ? 'dist' : 'src';
+        const databaseEntitiesPath = path.resolve(__dirname, '..', '..', rootDir, 'infrastructure', 'models', '**', '*.{ts,js}');
+        const databaseFilePath = path.join(os.homedir(), 'confidant', 'confidant.db');
+
         this._orm = await MikroORM.init({
-            entities: ['./src/infrastructure/models/*.ts'],
-            dbName: 'confidant.db',
+            entities: [databaseEntitiesPath],
+            dbName: databaseFilePath,
             password: 'samplePassword'
         });
     }
