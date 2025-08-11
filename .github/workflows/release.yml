@@ -31,7 +31,7 @@ jobs:
         run: npm -g install @semantic-release/git semantic-release && semantic-release
 
       - name: Execute semantic-release
-        run: npx semantic-release
         env:
-         GITHUB_TOKEN: ${{ secrets.CONFIDANT_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+        run: npx semantic-release
         
