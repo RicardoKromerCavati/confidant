@@ -8,6 +8,7 @@ const config = {
         [
             "@semantic-release/github",
             {
+                "assets": [],
                 "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
             }
         ]
