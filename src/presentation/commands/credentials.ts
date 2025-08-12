@@ -1,43 +1,51 @@
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { CredentialService } from '../../domain/services/credentialService';
 import * as readline from 'readline/promises';
 import { container } from 'tsyringe';
 import { stdin as input, stdout as output } from "node:process";
+import { GuidedOption } from './models/guidedOption';
 
-export function asignCredentialCommands(program: Command) {
+export function assignCredentialCommands(program: Command) {
     program
         .command('create')
-        .alias('cc')
-        .alias('create-credential')
-        .description('Create new credential')
-        .argument('<Item name>', 'Meaningful name for item (required)')
-        .argument('<Username>', 'Username or email used in credential (required)')
-        .argument('[Password]', 'Your item password (optional - send blank and confidant will create one for you)')
+        .alias('c')
+        .description('Create new credential.')
+        .argument('[Item name]', 'Meaningful name for item (e.g Github, github.com) (Required when using non guided creation).', '')
+        .argument('[Account]', 'Username or email used in credential (Required when using non guided creation).', '')
+        .argument('[Password]', 'The credential password (optional - send blank and confidant will create one for you).', '')
+        .option('--guided', 'Guided creation of new credentials.')
         .action(createCredential);
 
     program
         .command('list')
         .alias('l')
-        .description('Retrieve all items')
+        .description('Get list of all credentials.')
         .action(getCredentials);
 
     program
         .command('get')
-        .alias('gp')
-        .alias('get-password')
-        .description('Get item password from id')
-        .argument('<id>', 'Credential id')
+        .alias('g')
+        .description('Get item password from id.')
+        .argument('<id>', 'Credential identifier.')
         .action(getCredentialPasswordById);
 
     program
-        .command('genpass')
-        .alias('generate-password')
-        .description('Generate new password')
+        .command('make')
+        .alias('m')
+        .description('Create new password.')
         .action(createPassword);
 
 }
 
-async function createCredential(credentialName: string, username: string, password: string): Promise<void> {
+async function createCredential(credentialName: string, username: string, password: string, options: GuidedOption): Promise<void> {
+
+    if (options.guided) {
+        //TODO: Continue here, created guided option.
+        console.log(options.guided);
+        console.log('Not ready yet.');
+        return;
+    }
+
     var credentialService = container.resolve(CredentialService);
     const result = await credentialService.createCredential(credentialName, username, password);
 
@@ -63,7 +71,7 @@ async function getCredentials(): Promise<void> {
     for (let index = 0; index < foundCredentials.length; index++) {
         const element = foundCredentials[index];
 
-        let credential = { Id: element.id, CredentialName: element.credentialName, Username: element.username };
+        let credential = { Id: element.id, CredentialName: element.credentialName, Account: element.username };
 
         console.log(JSON.stringify(credential));
     }
