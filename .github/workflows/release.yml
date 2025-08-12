@@ -37,9 +37,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Compact dist folder
-        run: zip -r dist.zip dist
-
       - name: Execute semantic-release
         run: npx semantic-release
 
