@@ -5,15 +5,15 @@ const config = {
         '@semantic-release/commit-analyzer',
         '@semantic-release/release-notes-generator',
         [
-            "@semantic-release/changelog",
+            "@semantic-release/npm",
             {
-                "changelogFile": "docs/CHANGELOG-${nextRelease.version}.md"
+                "pkgRoot": "dist"
             }
         ],
         [
             "@semantic-release/git",
             {
-                "assets": ["docs/*.md"],
+                "assets": [""],
                 "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
             }
         ]
