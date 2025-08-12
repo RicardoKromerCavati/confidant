@@ -4,16 +4,11 @@ const config = {
     plugins: [
         '@semantic-release/commit-analyzer',
         '@semantic-release/release-notes-generator',
-        [
-            "@semantic-release/changelog",
-            {
-                "changelogFile": "docs/CHANGELOG-${nextRelease.version}.md"
-            }
-        ],
+        "@semantic-release/npm",
         [
             "@semantic-release/git",
             {
-                "assets": ["docs/*.md"],
+                "assets": [""],
                 "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
             }
         ]

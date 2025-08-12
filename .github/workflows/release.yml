@@ -1,9 +1,17 @@
-name: Release
+name: Release on GitHub and Publish on NPM
 
 on:
   workflow_dispatch:
   push:
     branches: ["main"]
+
+env:
+  GIT_AUTHOR_NAME: 'Ricardo Kromer Cavati'
+  GIT_AUTHOR_EMAIL: ricardokcavati@gmail.com
+  GIT_COMMITTER_NAME: 'Ricardo Kromer Cavati'
+  GIT_COMMITTER_EMAIL: ricardokcavati@gmail.com
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN  }}
 
 jobs:
   release:
@@ -29,15 +37,7 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Compact dist folder
-        run: zip -r dist.zip dist
-
       - name: Execute semantic-release
-        env:
-          GIT_AUTHOR_NAME: 'Ricardo Kromer Cavati'
-          GIT_AUTHOR_EMAIL: ricardokcavati@gmail.com
-          GIT_COMMITTER_NAME: 'Ricardo Kromer Cavati'
-          GIT_COMMITTER_EMAIL: ricardokcavati@gmail.com
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
         run: npx semantic-release
+
         
