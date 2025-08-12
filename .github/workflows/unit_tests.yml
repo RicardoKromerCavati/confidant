@@ -1,4 +1,4 @@
-name: Build and Tests
+name: Unit Tests
 
 on:
   push:
@@ -11,29 +11,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: Build the application
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set Up Node Js
-        uses: actions/setup-node@v4
-        with: 
-          node-version: 18
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
   tests:
     name: Unit tests
-    needs: build
-    if: needs.build.result == 'success'
     runs-on: ubuntu-latest
 
     steps:

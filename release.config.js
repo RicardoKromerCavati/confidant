@@ -1,5 +1,6 @@
 const config = {
-    branches: ['main'],
+    branches: ['publish'],
+    tagFormat: '${version}',
     plugins: [
         '@semantic-release/commit-analyzer',
         '@semantic-release/release-notes-generator',
@@ -16,8 +17,7 @@ const config = {
                 ],
                 "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
             }
-        ],
-        //'@semantic-release/github'
+        ]
     ]
 };
 
