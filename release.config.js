@@ -8,6 +8,7 @@ const config = {
             presetConfig: {},
             releaseRules: [
                 { type: "fix", release: "patch" },
+                { type: "chore", release: "minor" },
                 { type: "feat", release: "major" }
             ],
         },
@@ -15,7 +16,8 @@ const config = {
         [
             "@semantic-release/github",
             {
-                "successComment": "This ${issue.pull_request ? 'pull request' : 'issue'} is included in version ${nextRelease.version}.\n\nCommits on ${branch}:\n\n${commits}"
+                assets: "dist.zip",
+                successComment: "This ${issue.pull_request ? 'pull request' : 'issue'} is included in version ${nextRelease.version}.\n\nCommits on ${branch}:\n\n${commits}"
             }
         ],
         "@semantic-release/npm"
