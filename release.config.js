@@ -7,7 +7,6 @@ const config = {
             preset: "conventionalcommits",
             presetConfig: {},
             releaseRules: [
-                { type: "chore", release: "minor" },
                 { type: "fix", release: "patch" },
                 { type: "feat", release: "major" }
             ],
