@@ -34,6 +34,10 @@ jobs:
 
       - name: Execute semantic-release
         env:
+          GIT_AUTHOR_NAME: 'Ricardo Kromer Cavati'
+          GIT_AUTHOR_EMAIL: ricardokcavati@gmail.com
+          GIT_COMMITTER_NAME: 'Ricardo Kromer Cavati'
+          GIT_COMMITTER_EMAIL: ricardokcavati@gmail.com
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
         run: npx semantic-release
         
