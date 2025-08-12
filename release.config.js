@@ -3,6 +3,15 @@ const config = {
     tagFormat: '${version}',
     plugins: [
         '@semantic-release/commit-analyzer',
+        {
+            preset: "conventionalcommits",
+            presetConfig: {},
+            releaseRules: [
+                { type: "chore", release: "minor" },
+                { type: "fix", release: "patch" },
+                { type: "feat", release: "major" }
+            ],
+        },
         '@semantic-release/release-notes-generator',
         [
             "@semantic-release/github",
