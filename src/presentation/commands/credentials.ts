@@ -127,7 +127,6 @@ async function createPassword() {
 
     rl.close();
 
-    //TODO: make this use the instance
     const passwordResult = CredentialService.generatePassword(length, useNumbers, useSpecialChars, useUpperCaseChars);
 
     if (!passwordResult.isSuccessful) {
