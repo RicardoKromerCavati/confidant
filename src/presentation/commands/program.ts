@@ -1,4 +1,6 @@
 import { Command } from 'commander';
+import { readFileSync } from 'fs';
+import { version } from '../../../package.json';
 
 export function assignProgramCommands(program: Command) {
 
@@ -13,6 +15,10 @@ export function assignProgramCommands(program: Command) {
 }
 
 function createCredential() {
-    //TODO Make it beautiful.
-    console.log('About');
+    console.log(`\n| ============================================================ |
+|                     confidant v${version}                         | 
+| ============================================================ |`);
+    const file = readFileSync('./src/presentation/about.txt', 'utf-8');
+
+    console.log(`${file}\n`);
 }

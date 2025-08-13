@@ -1,0 +1,5 @@
+| Developed by: Ricardo Kromer Cavati                          |
+| License: MIT                                                 |
+| GitHub: https://github.com/RicardoKromerCavati/confidant     |
+| Description: Clean and simple command line password manager. |
+| ============================================================ |
