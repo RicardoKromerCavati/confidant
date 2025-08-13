@@ -68,7 +68,7 @@ async function createCredential(credentialName: string, username: string, passwo
             password = prompt('Please enter your password: ', { echo: '*' });
         }
     }
-
+    //TODO: Continue here, make clear arguments are missing when user does not use --guided option.
     var credentialService = container.resolve(CredentialService);
     const result = await credentialService.createCredential(credentialName, username, password);
 
