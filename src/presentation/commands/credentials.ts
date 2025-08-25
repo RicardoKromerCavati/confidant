@@ -10,14 +10,19 @@ import promptSync from 'prompt-sync';
 
 export function assignCredentialCommands(program: Command) {
     program
-        .command('create')
-        .alias('c')
+        .command('new')
+        .alias('n')
         .description('Create new credential.')
-        .argument('[Item name]', 'Meaningful name for item (e.g Github, github.com) (Required when using non guided creation).', '')
-        .argument('[Account]', 'Username or email used in credential (Required when using non guided creation).', '')
+        .argument('<Item name>', 'Meaningful name for item (e.g Github, github.com) (Required).')
+        .argument('<Account>', 'Username or email used in credential (Required).')
         .argument('[Password]', 'The credential password (optional - send blank and confidant will create one for you).', '')
-        .option('--guided', 'Guided creation of new credentials.')
         .action(createCredential);
+
+    program
+        .command('new-guided')
+        .alias('ng')
+        .description('Create new credential (with wizard).')
+        .action(createCredentialWithWizard);
 
     program
         .command('list')
@@ -40,35 +45,55 @@ export function assignCredentialCommands(program: Command) {
 
 }
 
-async function createCredential(credentialName: string, username: string, password: string, options: GuidedOption): Promise<void> {
+async function createCredential(credentialName: string, username: string, password: string): Promise<void> {
+    var credentialService = container.resolve(CredentialService);
+    const result = await credentialService.createCredential(credentialName, username, password);
 
-    if (options.guided) {
-        console.log('Creating new credential!\n');
-
-        var readLineInterface = readline.createInterface({ input, output });
-
-        credentialName = await
-            readLineInterface.question('Please type a name for the new item.\nIt should be something meaningful that helps you remember where this credentials is from (e.g Github, github.com): ');
-
-        username =
-            await readLineInterface.question('Please enter the account.\nIt should be your username or email used to log in: ');
-
-        const shouldCreatePassword = await askYesOrNoQuestion(readLineInterface, 'Would like for confidant to create a password for you? [y/n]: ');
-
-        readLineInterface.close();
-
-        if (shouldCreatePassword) {
-
-            const createdPassword = (await createPassword()).value;
-            password = createdPassword?.isNullOrWhiteSpace() ? '' : `${createdPassword}`;
-        }
-        else {
-            const prompt = promptSync({ sigint: true });
-
-            password = prompt('Please enter your password: ', { echo: '*' });
-        }
+    if (result.isSuccessful == false) {
+        console.log(result.message);
+        return;
     }
-    //TODO: Continue here, make clear arguments are missing when user does not use --guided option.
+
+    console.log('Credential created successfully');
+}
+
+async function createCredentialWithWizard(): Promise<void> {
+
+    console.log('Creating new credential!\n');
+
+    var readLineInterface = readline.createInterface({ input, output });
+
+    var credentialName = '';
+
+    do {
+        credentialName = await
+            readLineInterface.question('Please type a name for the new item.\nIt should be something meaningful that helps you remember where this credential is from (e.g Github, github.com) and it can\'t be empty: ');
+    } while (credentialName.isNullOrWhiteSpace())
+
+
+    var username = '';
+    
+    do {
+        username = await readLineInterface.question('Please enter the account.\nIt should be your username or email used to log in and it can\'t be empty: ');
+    } while (username.isNullOrWhiteSpace());
+
+    const shouldCreatePassword = await askYesOrNoQuestion(readLineInterface, 'Would like for confidant to create a password for you? [y/n]: ');
+
+    readLineInterface.close();
+
+    var password = '';
+
+    if (shouldCreatePassword) {
+
+        const createdPassword = (await createPassword()).value;
+        password = createdPassword?.isNullOrWhiteSpace() ? '' : `${createdPassword}`;
+    }
+    else {
+        const prompt = promptSync({ sigint: true });
+
+        password = prompt('Please enter your password: ', { echo: '*' });
+    }
+
     var credentialService = container.resolve(CredentialService);
     const result = await credentialService.createCredential(credentialName, username, password);
 
@@ -94,7 +119,7 @@ async function getCredentials(): Promise<void> {
     for (let index = 0; index < foundCredentials.length; index++) {
         const element = foundCredentials[index];
 
-        let credential = { Id: element.id, CredentialName: element.credentialName, Account: element.username };
+        let credential = { Id: element.id, ItemName: element.credentialName, Account: element.username };
 
         console.log(JSON.stringify(credential));
     }
