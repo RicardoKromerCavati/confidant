@@ -7,7 +7,7 @@ declare global {
 }
 
 String.prototype.isNullOrWhiteSpace = function (): boolean {
-    return this === null || this === undefined || this.trim() === '';
+    return this === null || this === undefined || this.trim() === '' || this.match(/^ *$/) !== null;
 }
 
 String.prototype.hasSpecialChars = function (): boolean {
