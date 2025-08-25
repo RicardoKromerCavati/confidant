@@ -1,5 +1,5 @@
-![Build](https://img.shields.io/github/actions/workflow/status/ricardokromercavati/confidant/.github/workflows/build.yml?label=Build)
-![Tests](https://img.shields.io/github/actions/workflow/status/ricardokromercavati/confidant/.github/workflows/unit_tests.yml?label=Tests)
+![Build](https://img.shields.io/github/actions/workflow/status/ricardokromercavati/confidant/.github/workflows/build.yml?label=Build&branch=main)
+![Tests](https://img.shields.io/github/actions/workflow/status/ricardokromercavati/confidant/.github/workflows/unit_tests.yml?label=Tests&branch=main)
 
 # confidant
 

@@ -22,7 +22,7 @@ describe('CredentialServiceTests', () => {
         const credentialName: string = '';
         const username: string = '';
         const password: string = '';
-        const expectedMessage = 'Credential not createdd';
+        const expectedMessage = 'Credential not created';
 
         // Act
         const operationResult = await credentialService.createCredential(credentialName, username, password);
