@@ -1,3 +1,6 @@
+![Build](https://img.shields.io/github/actions/workflow/status/ricardokromercavati/confidant/.github/workflows/build.yml?label=Build)
+![Tests](https://img.shields.io/github/actions/workflow/status/ricardokromercavati/confidant/.github/workflows/unit_tests.yml?label=Tests)
+
 # confidant
 
 This is my clean and simple command line password manager!
