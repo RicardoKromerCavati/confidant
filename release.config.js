@@ -17,6 +17,7 @@ const config = {
         [
             "@semantic-release/github",
             {
+                assets: "dist.zip",
                 successComment: "This ${issue.pull_request ? 'pull request' : 'issue'} is included in version ${nextRelease.version}.\n\nCommits on ${branch}:\n\n${commits}"
             }
         ],
