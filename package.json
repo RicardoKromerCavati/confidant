@@ -16,7 +16,7 @@
   "type": "commonjs",
   "main": "index.js",
   "bin": {
-    "confidant": "dist/src/index.js"
+    "confidant": "dist/index.js"
   },
   "scripts": {
     "test": "jest",
