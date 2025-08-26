@@ -21,7 +21,8 @@ export class DatabaseContext {
 
     private async create() {
         const rootDir = __dirname.includes('dist') ? 'dist' : 'src';
-        const databaseEntitiesPath = path.resolve(__dirname, '..', '..', rootDir, 'infrastructure', 'models', '**', '*.{ts,js}');
+        //console.log(rootDir);
+        const databaseEntitiesPath = path.resolve(__dirname, '..', '..', rootDir, 'src', 'infrastructure', 'models', '**', '*.{ts,js}');
         const databaseFilePath = path.join(os.homedir(), 'confidant', 'confidant.db');
 
         this._orm = await MikroORM.init({
