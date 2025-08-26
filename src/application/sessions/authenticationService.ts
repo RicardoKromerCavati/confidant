@@ -22,7 +22,8 @@ export class AuthenticationService {
         if (dbSession === null) {
             const masterPassword = await this.createMasterPassword();
 
-            var session = new Session(masterPassword, moment().add(10, 'minutes').toISOString(true));
+            //TODO: Make session timeout dynamic.
+            var session = new Session(masterPassword, moment().add(1, 'hour').toISOString(true));
 
             await this._sessionRepository.InsertSession(session);
 
