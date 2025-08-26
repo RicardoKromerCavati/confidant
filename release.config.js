@@ -9,7 +9,8 @@ const config = {
             releaseRules: [
                 { type: "fix", release: "patch" },
                 { type: "chore", release: "minor" },
-                { type: "feat", release: "major" }
+                { type: "feat", release: "minor" },
+                { breaking: true, release: 'major' }
             ],
         },
         '@semantic-release/release-notes-generator',
