@@ -54,17 +54,31 @@ export class CredentialService {
         }
     }
 
-    public async getCredentialPassword(id: number): Promise<OperationResult<string>> {
+    public async getCredentialById(id: number): Promise<OperationResult<string>> {
         try {
             const foundCredential = await this._credentialRepository.getCredentialById(id);
 
             if (foundCredential == null) {
-                
+
                 return operationResultHandler.createErrorResult('Could not find credential');
             }
-            
+
             return operationResultHandler.createSuccessResult(foundCredential.password.value)
 
+        } catch (error) {
+            return operationResultHandler.createErrorResult(JSON.stringify(error));
+        }
+    }
+
+    public async deleteCredential(id: number): Promise<OperationResult<string>> {
+        try {
+            const [success, message] = await this._credentialRepository.deleteCredentialById(id);
+
+            if (success) {
+                return operationResultHandler.createSuccessResult("Deleted successfully")
+            }
+
+            return operationResultHandler.createErrorResult(message);
         } catch (error) {
             return operationResultHandler.createErrorResult(JSON.stringify(error));
         }

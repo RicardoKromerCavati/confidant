@@ -43,6 +43,13 @@ export function assignCredentialCommands(program: Command) {
         .description('Create new password.')
         .action(copyPasswordToClipboard);
 
+    program
+        .command('delete')
+        .alias('d')
+        .description('Delete credential.')
+        .argument('<id>', 'Credential identifier.')
+        .action(deleteCredentialById);
+
 }
 
 async function createCredential(credentialName: string, username: string, password: string): Promise<void> {
@@ -72,7 +79,7 @@ async function createCredentialWithWizard(): Promise<void> {
 
 
     var username = '';
-    
+
     do {
         username = await readLineInterface.question('Please enter the account.\nIt should be your username or email used to log in and it can\'t be empty: ');
     } while (username.isNullOrWhiteSpace());
@@ -134,7 +141,7 @@ async function getCredentialPasswordById(idStr: string): Promise<void> {
         return;
     }
 
-    const result = await credentialService.getCredentialPassword(id);
+    const result = await credentialService.getCredentialById(id);
 
     if (!result.isSuccessful) {
         console.log(result.message);
@@ -147,6 +154,25 @@ async function getCredentialPasswordById(idStr: string): Promise<void> {
     await clipboardy.write(password);
 
     console.log('Password copied to clipboard!');
+}
+
+async function deleteCredentialById(idStr: string): Promise<void> {
+    var credentialService = container.resolve(CredentialService);
+    const id = Number(idStr);
+
+    if (isNaN(id)) {
+        console.log('Please enter a numeric credential id');
+        return;
+    }
+
+    const result = await credentialService.deleteCredential(id);
+
+    if (!result.isSuccessful) {
+        console.log(result.message);
+        return;
+    }
+
+    console.log('Credential deleted successfully!');
 }
 
 async function copyPasswordToClipboard() {
