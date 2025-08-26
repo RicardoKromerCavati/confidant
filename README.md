@@ -5,15 +5,15 @@
 
 This is my clean and simple command line password manager!
 
-# The why
+# ❗ The why 
 I came up with the ideia of developing it for two reasons.  
 The first one is to learn more about technologies and concepts I don't usually use at work.  
 The second reason is because there are some ocasions when I can't use a consolidated password manager. And then I thought 'Why not create my own?!'  
 
-# Details
+# 📜 Details
 I decided to start developing a command line tool and then upgrade it with time.
 
-# Technologies
+# 💻 Technologies
 ## Programming language and runtime
 - [TypeScript](https://www.typescriptlang.org/).
 - [Node.js](https://nodejs.org/en).
@@ -38,7 +38,7 @@ I decided to start developing a command line tool and then upgrade it with time.
     - [GitHub](https://github.com/semantic-release/github).
     - [Release Notes Generator](https://github.com/semantic-release/release-notes-generator).
 
-# What it can do (for now)
+# ✔️ What it can do (for now)
 - Create new item in database (with name, account name and password).  
     - There are two ways of doing the creation, the guided way, in which confidant will ask the use for all the needed information, the second way to via command line, in which the user needs to provide the arguments to the command.
 - Retrieve list of created items.  
@@ -47,5 +47,7 @@ I decided to start developing a command line tool and then upgrade it with time.
     - Acquires password from database and copies it to the user's clipboard.
 - A guided creation of passwords.  
     - It asks the user about some of the characteristics of the desired password, creates it and copies to the clipboard.
-## Important
-All the information is saved locally, please use carefully.
+- Deletion of credentials.  
+    - Deletes a credential based on its id.
+## ⚠️ Important
+All the information is stored locally, please use carefully.
