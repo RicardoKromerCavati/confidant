@@ -1,43 +1,106 @@
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { CredentialService } from '../../domain/services/credentialService';
 import * as readline from 'readline/promises';
 import { container } from 'tsyringe';
 import { stdin as input, stdout as output } from "node:process";
+import { GuidedOption } from './models/guidedOption';
+import * as operationResultHandler from '../../domain/models/operationResult';
+import { OperationResult } from '../../domain/models/operationResult';
+import promptSync from 'prompt-sync';
 
-export function asignCredentialCommands(program: Command) {
+export function assignCredentialCommands(program: Command) {
     program
-        .command('create')
-        .alias('cc')
-        .alias('create-credential')
-        .description('Create new credential')
-        .argument('<Item name>', 'Meaningful name for item (required)')
-        .argument('<Username>', 'Username or email used in credential (required)')
-        .argument('[Password]', 'Your item password (optional - send blank and confidant will create one for you)')
+        .command('new')
+        .alias('n')
+        .description('Create new credential.')
+        .argument('<Item name>', 'Meaningful name for item (e.g Github, github.com) (Required).')
+        .argument('<Account>', 'Username or email used in credential (Required).')
+        .argument('[Password]', 'The credential password (optional - send blank and confidant will create one for you).', '')
         .action(createCredential);
+
+    program
+        .command('new-guided')
+        .alias('ng')
+        .description('Create new credential (with wizard).')
+        .action(createCredentialWithWizard);
 
     program
         .command('list')
         .alias('l')
-        .description('Retrieve all items')
+        .description('Get list of all credentials.')
         .action(getCredentials);
 
     program
         .command('get')
-        .alias('gp')
-        .alias('get-password')
-        .description('Get item password from id')
-        .argument('<id>', 'Credential id')
+        .alias('g')
+        .description('Get item password from id.')
+        .argument('<id>', 'Credential identifier.')
         .action(getCredentialPasswordById);
 
     program
-        .command('genpass')
-        .alias('generate-password')
-        .description('Generate new password')
-        .action(createPassword);
+        .command('make')
+        .alias('m')
+        .description('Create new password.')
+        .action(copyPasswordToClipboard);
+
+    program
+        .command('delete')
+        .alias('d')
+        .description('Delete credential.')
+        .argument('<id>', 'Credential identifier.')
+        .action(deleteCredentialById);
 
 }
 
 async function createCredential(credentialName: string, username: string, password: string): Promise<void> {
+    var credentialService = container.resolve(CredentialService);
+    const result = await credentialService.createCredential(credentialName, username, password);
+
+    if (result.isSuccessful == false) {
+        console.log(result.message);
+        return;
+    }
+
+    console.log('Credential created successfully');
+}
+
+async function createCredentialWithWizard(): Promise<void> {
+
+    console.log('Creating new credential!\n');
+
+    var readLineInterface = readline.createInterface({ input, output });
+
+    var credentialName = '';
+
+    do {
+        credentialName = await
+            readLineInterface.question('Please type a name for the new item.\nIt should be something meaningful that helps you remember where this credential is from (e.g Github, github.com) and it can\'t be empty: ');
+    } while (credentialName.isNullOrWhiteSpace())
+
+
+    var username = '';
+
+    do {
+        username = await readLineInterface.question('Please enter the account.\nIt should be your username or email used to log in and it can\'t be empty: ');
+    } while (username.isNullOrWhiteSpace());
+
+    const shouldCreatePassword = await askYesOrNoQuestion(readLineInterface, 'Would like for confidant to create a password for you? [y/n]: ');
+
+    readLineInterface.close();
+
+    var password = '';
+
+    if (shouldCreatePassword) {
+
+        const createdPassword = (await createPassword()).value;
+        password = createdPassword?.isNullOrWhiteSpace() ? '' : `${createdPassword}`;
+    }
+    else {
+        const prompt = promptSync({ sigint: true });
+
+        password = prompt('Please enter your password: ', { echo: '*' });
+    }
+
     var credentialService = container.resolve(CredentialService);
     const result = await credentialService.createCredential(credentialName, username, password);
 
@@ -63,7 +126,7 @@ async function getCredentials(): Promise<void> {
     for (let index = 0; index < foundCredentials.length; index++) {
         const element = foundCredentials[index];
 
-        let credential = { Id: element.id, CredentialName: element.credentialName, Username: element.username };
+        let credential = { Id: element.id, ItemName: element.credentialName, Account: element.username };
 
         console.log(JSON.stringify(credential));
     }
@@ -78,7 +141,7 @@ async function getCredentialPasswordById(idStr: string): Promise<void> {
         return;
     }
 
-    const result = await credentialService.getCredentialPassword(id);
+    const result = await credentialService.getCredentialById(id);
 
     if (!result.isSuccessful) {
         console.log(result.message);
@@ -93,15 +156,50 @@ async function getCredentialPasswordById(idStr: string): Promise<void> {
     console.log('Password copied to clipboard!');
 }
 
-async function createPassword() {
+async function deleteCredentialById(idStr: string): Promise<void> {
+    var credentialService = container.resolve(CredentialService);
+    const id = Number(idStr);
+
+    if (isNaN(id)) {
+        console.log('Please enter a numeric credential id');
+        return;
+    }
+
+    const result = await credentialService.deleteCredential(id);
+
+    if (!result.isSuccessful) {
+        console.log(result.message);
+        return;
+    }
+
+    console.log('Credential deleted successfully!');
+}
+
+async function copyPasswordToClipboard() {
+    const passwordCreationResult = await createPassword();
+
+    if (passwordCreationResult.isSuccessful) {
+        const clipboardy = (await import("clipboardy")).default
+
+        await clipboardy.write(passwordCreationResult.value);
+
+        console.log('Password was copied to your clipboard');
+
+        return;
+    }
+
+    console.log(passwordCreationResult.message);
+}
+
+async function createPassword(): Promise<OperationResult<string>> {
     var rl = readline.createInterface({ input, output });
 
-    console.log('Generate new passowrd!');
+    console.log('Generate new password!\n');
 
     var length = 0;
 
     while (length == 0) {
-        var answer = await rl.question('Please choose the length from 8 to 128: ');
+        var answer = await rl.question('Please choose the length from 12 to 128: ');
 
         const convertedLenght = Number(answer);
 
@@ -112,7 +210,7 @@ async function createPassword() {
 
         length = convertedLenght;
 
-        if (length < 8 || length > 128) {
+        if (length < 12 || length > 128) {
             length = 0;
             console.log('Please write a numeric value from 8 to 128!');
             continue;
@@ -130,18 +228,10 @@ async function createPassword() {
     const passwordResult = CredentialService.generatePassword(length, useNumbers, useSpecialChars, useUpperCaseChars);
 
     if (!passwordResult.isSuccessful) {
-        console.log(passwordResult.message);
-        return;
+        return operationResultHandler.createErrorResult(JSON.stringify(passwordResult.message));
     }
 
-    const generatedPassword = passwordResult.value;
-
-    const clipboardy = (await import("clipboardy")).default
-
-    await clipboardy.write(generatedPassword);
-
-    console.log('Password was copied to your clipboard');
-
+    return operationResultHandler.createSuccessResult(passwordResult.value);
 }
 
 async function askYesOrNoQuestion(rl: readline.Interface, question: string): Promise<boolean> {

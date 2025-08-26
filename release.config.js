@@ -8,14 +8,17 @@ const config = {
             presetConfig: {},
             releaseRules: [
                 { type: "fix", release: "patch" },
-                { type: "feat", release: "major" }
+                { type: "chore", release: "minor" },
+                { type: "feat", release: "minor" },
+                { breaking: true, release: 'major' }
             ],
         },
         '@semantic-release/release-notes-generator',
         [
             "@semantic-release/github",
             {
-                "successComment": "This ${issue.pull_request ? 'pull request' : 'issue'} is included in version ${nextRelease.version}.\n\nCommits on ${branch}:\n\n${commits}"
+                assets: "dist.zip",
+                successComment: "This ${issue.pull_request ? 'pull request' : 'issue'} is included in version ${nextRelease.version}.\n\nCommits on ${branch}:\n\n${commits}"
             }
         ],
         "@semantic-release/npm"

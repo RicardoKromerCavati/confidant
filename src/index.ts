@@ -1,13 +1,14 @@
 #!/usr/bin/env node
-import { Command } from 'commander';
-import { asignCredentialCommands as asignCredentialCommands } from './presentation/commands/credentials';
+import { Command, Option } from 'commander';
+import { assignCredentialCommands } from './presentation/commands/credentials';
+import { assignProgramCommands } from './presentation/commands/program';
 import { AuthenticationService } from './application/sessions/authenticationService';
 import { DatabaseContext } from './infrastructure/databaseContext';
 import { container } from 'tsyringe';
+import { version } from '../package.json';
 
-const commandName = 'confidant';
+const programName = 'confidant';
 const description = 'Your favorite password manager';
-const version = '1.0.0.1';
 
 async function startProgram() {
     await container.resolve(DatabaseContext).initializeDatabase();
@@ -28,19 +29,21 @@ async function startProgram() {
     };
 
     const program = new Command();
+
     program
-        .name(commandName)
+        .name(programName)
         .description(description)
-        .version(version);
+        .version(version, '--version, --v', 'Version of the program.');;
 
-    asignCredentialCommands(program);
+    assignProgramCommands(program);
+    assignCredentialCommands(program);
 
-    program.parse(process.argv);
+    program.parse();
 }
 
 async function logUserIn(): Promise<boolean> {
 
-    const authenticationService : AuthenticationService = container.resolve(AuthenticationService);
+    const authenticationService: AuthenticationService = container.resolve(AuthenticationService);
 
     const sessionResult = await authenticationService.validateSession();
 

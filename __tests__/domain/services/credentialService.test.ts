@@ -165,7 +165,7 @@ describe('CredentialServiceTests', () => {
         });
 
         // Act
-        const operationResult = await credentialService.getCredentialPassword(credentialId);
+        const operationResult = await credentialService.getCredentialById(credentialId);
 
         // Assert
         expect(operationResult.isSuccessful).toBe(true);
@@ -194,7 +194,7 @@ describe('CredentialServiceTests', () => {
         });
 
         // Act
-        const operationResult = await credentialService.getCredentialPassword(invalidCredentialId);
+        const operationResult = await credentialService.getCredentialById(invalidCredentialId);
 
         // Assert
         expect(operationResult.isSuccessful).toBe(false);

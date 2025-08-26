@@ -3,6 +3,7 @@ import { DbCredential } from '../models/dbCredential';
 import { injectable, inject } from "tsyringe";
 import { DatabaseContext } from '../databaseContext';
 import { DbPassword } from '../models/dbPassword';
+import { OperationResult } from '../../domain/models/operationResult';
 
 @injectable()
 export class CredentialRepository {
@@ -59,5 +60,19 @@ export class CredentialRepository {
         const [_, credential] = Credential.Create(dbCredential.id, dbCredential.credentialName, dbCredential.username, dbCredential.password.value);
 
         return credential;
+    }
+
+    public async deleteCredentialById(credentialId: number): Promise<[boolean, string]> {
+        const context = await this._databaseContext.getContext();
+
+        const dbCredential = await context.findOne(DbCredential, credentialId);
+
+        if (!dbCredential) {
+            return [false, "Credential not found"];
+        }
+
+        await context.removeAndFlush([dbCredential]);
+        //await context.nativeDelete(DbCredential, { id: credentialId });
+        return [true, "Success"];
     }
 }
