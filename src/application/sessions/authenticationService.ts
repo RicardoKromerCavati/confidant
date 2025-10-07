@@ -22,8 +22,9 @@ export class AuthenticationService {
         if (dbSession === null) {
             const masterPassword = await this.createMasterPassword();
 
-            //TODO: Make session timeout dynamic.
-            var session = new Session(masterPassword, moment().add(1, 'hour').toISOString(true));
+            const expiration = this.getSessionTimeout();
+
+            var session = new Session(masterPassword, expiration);
 
             await this._sessionRepository.InsertSession(session);
 
@@ -46,7 +47,7 @@ export class AuthenticationService {
 
         if (await bcrypt.compare(masterPassword, dbSession.passwordHash)) {
             
-            dbSession.expiration = moment().add(10, 'minutes').toISOString(true);
+            dbSession.expiration = this.getSessionTimeout();
 
             await this._sessionRepository.UpdateSession(dbSession);
 
@@ -92,5 +93,9 @@ export class AuthenticationService {
         }
 
         return bcrypt.hashSync(masterPasswordFirstAttempt, 0);
+    }
+
+    private getSessionTimeout() : string {
+        return moment().add(8, 'hour').toISOString(true);
     }
 }
