@@ -4,14 +4,7 @@ const config = {
     plugins: [
         '@semantic-release/commit-analyzer',
         {
-            preset: "conventionalcommits",
-            presetConfig: {},
-            releaseRules: [
-                { type: "fix", release: "patch" },
-                { type: "chore", release: "minor" },
-                { type: "feat", release: "minor" },
-                { type: "BREAKING CHANGE", release: "major" }
-            ],
+            preset: "conventionalcommits"
         },
         '@semantic-release/release-notes-generator',
         [
