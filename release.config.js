@@ -2,6 +2,7 @@ const config = {
     branches: ['main'],
     tagFormat: '${version}',
     plugins: [
+        [
         '@semantic-release/commit-analyzer',
         {
             preset: "conventionalcommits",
@@ -12,7 +13,8 @@ const config = {
                 { type: "feat", release: "minor" },
                 { breaking: true, release: 'major' }
             ],
-        },
+        } 
+    ],
         '@semantic-release/release-notes-generator',
         [
             "@semantic-release/github",
