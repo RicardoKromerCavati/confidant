@@ -10,7 +10,7 @@ const config = {
                 { type: "fix", release: "patch" },
                 { type: "chore", release: "minor" },
                 { type: "feat", release: "minor" },
-                { breaking: true, release: 'major' }
+                { type: "BREAKING CHANGE", release: "major" }
             ],
         },
         '@semantic-release/release-notes-generator',
